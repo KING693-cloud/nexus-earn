@@ -1,422 +1,321 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-        <meta property="og:title" content="NEXUS EARN - Secure Financial Ecosystem">
-    <meta property="og:description" content="Join the NEXUS ecosystem and start earning today. Secure, reliable, and fast.">
-    <meta property="og:image" content="https://nexus-earn.com/nexus-logo.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    
+    <!-- WhatsApp / Facebook / Twitter Preview Meta Tags -->
+    <meta property="og:title" content="NEXUS EARN - Login to Your Investment Dashboard">
+    <meta property="og:description" content="Access your NEXUS EARN account. Login with email, phone number, or username to manage your daily earnings up to ₦48,350 for 50 days.">
+    <meta property="og:image" content="https://nexus-earn.com/logo.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:url" content="https://nexus-earn.com">
     <meta property="og:type" content="website">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS EARN - Login</title>
-    <!-- FontAwesome for Premium Icons -->
+    <meta property="og:site_name" content="NEXUS EARN">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="NEXUS EARN - Login">
+    <meta name="twitter:description" content="Login to your NEXUS EARN account and start earning daily returns">
+    <meta name="twitter:image" content="https://nexus-earn.com/logo.png">
+    <meta name="description" content="Login to NEXUS EARN - Premium investment platform with daily returns up to ₦48,350 for 50 days">
+    <meta name="keywords" content="login, NEXUS EARN, investment, Nigeria, daily earnings">
+    <meta name="author" content="NEXUS EARN">
+    <meta name="theme-color" content="#e5b842">
+    
+    <title>NEXUS EARN - Login | Access Your Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-
-        body {
-            background-color: #0b0d17;
-            color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-        }
-
-        /* App Container Blueprint matching Dashboard max-width */
-        .app-container {
-            width: 100%;
-            max-width: 480px;
-            min-height: 100vh;
-            background: #111424;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-        }
-
-        /* --- NOTIFICATION TOAST --- */
-        .toast-notification {
-            position: fixed;
-            top: 25px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-120px);
-            width: calc(100% - 32px);
-            max-width: 400px;
-            background: #1b203a;
-            border-left: 4px solid #e5b842;
-            padding: 16px;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-            z-index: 50000;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { background-color: #0b0d17; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+        
+        @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
+        @keyframes glow { 0%,100% { box-shadow: 0 0 5px rgba(229,184,66,0.2); } 50% { box-shadow: 0 0 20px rgba(229,184,66,0.4); } }
+        
+        .app-container { width: 100%; max-width: 480px; min-height: 100vh; background: #111424; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 30px rgba(0, 0, 0, 0.5); }
+        
+        .toast-notification { position: fixed; top: 25px; left: 50%; transform: translateX(-50%) translateY(-120px); width: calc(100% - 32px); max-width: 400px; background: #1b203a; border-left: 4px solid #e5b842; padding: 16px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); z-index: 50000; display: flex; align-items: center; gap: 12px; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .toast-notification.show { transform: translateX(-50%) translateY(0); }
-        .toast-text { font-size: 0.85rem; font-weight: 600; color: #fff; }
-
-        /* Hero Banner Section */
-        .hero-banner {
-            width: 100%;
-            height: 35vh; 
-            min-height: 240px;
-            background: radial-gradient(circle at center, #1b203a 0%, #0b0d17 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 30px;
-            border-bottom: 1px solid rgba(229, 184, 66, 0.1);
-        }
-
-        /* Fallback Container if your logo file is missing */
-        .logo-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .brand-logo {
-            width: 85%; 
-            max-width: 320px;
-            height: auto;
-            object-fit: contain;
-        }
-
-        /* Text Fallback style if logo doesn't load */
-        .logo-fallback-text {
-            font-size: 1.8rem;
-            font-weight: 900;
-            letter-spacing: 4px;
-            background: linear-gradient(135deg, #f5d061 0%, #e5b842 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Main Workspace Panel */
-        .form-workspace {
-            flex-grow: 1;
-            padding: 30px 24px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .page-title {
-            text-align: center;
-            font-size: 1.3rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #ffffff;
-            margin-bottom: 4px;
-        }
-
-        .page-subline {
-            text-align: center;
-            font-size: 0.8rem;
-            color: #9ca3af;
-            margin-bottom: 25px;
-            line-height: 1.4;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .profile-input-wrapper {
-            width: 100%;
-            text-align: left;
-        }
-
-        .profile-input-wrapper label {
-            font-size: 0.7rem;
-            color: #9ca3af;
-            text-transform: uppercase;
-            font-weight: 700;
-            display: block;
-            margin-bottom: 6px;
-        }
-
-        .input-row-container {
-            width: 100%;
-            background: #1b203a;
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            padding: 0 14px;
-            height: 46px;
-        }
-
-        .input-row-container:focus-within {
-            border-color: #e5b842;
-        }
-
-        .input-row-container i {
-            font-size: 0.95rem;
-            color: #e5b842;
-            width: 20px;
-            text-align: center;
-        }
-
-        .input-row-container input {
-            width: 100%;
-            border: none;
-            background: transparent;
-            color: #ffffff;
-            font-size: 0.85rem;
-            height: 100%;
-        }
-
-        .input-row-container input::placeholder {
-            color: #71717a;
-        }
-
-        .input-row-container input:focus {
-            outline: none;
-        }
-
-        /* Optimized Recovery & Onboarding Links Grid */
-        .recovery-links {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 5px;
-            margin-bottom: 8px;
-        }
-
-        .recovery-links a {
-            color: #e5b842;
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .recovery-links a.danger-link {
-            color: #ef4444;
-        }
-
-        .recovery-links a:hover {
-            text-decoration: underline;
-        }
-
-        .btn-submit {
-            width: 100%;
-            height: 46px;
-            background: linear-gradient(135deg, #f5d061 0%, #e5b842 100%);
-            border: none;
-            border-radius: 8px;
-            color: #111424;
-            font-size: 0.9rem;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-            transition: transform 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 10px;
-        }
-
-        .btn-submit:active {
-            transform: scale(0.98);
-        }
+        .toast-text { font-size: 0.85rem; font-weight: 600; color: #fff; line-height: 1.4; }
+        
+        .hero-banner { width: 100%; height: 32vh; min-height: 240px; background: radial-gradient(circle at center, #1b203a 0%, #0b0d17 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; border-bottom: 1px solid rgba(229, 184, 66, 0.15); position: relative; overflow: hidden; }
+        .hero-banner::before { content: ''; position: absolute; top: -50%; right: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(229,184,66,0.05) 0%, transparent 70%); pointer-events: none; }
+        
+        .logo-box { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
+        .brand-logo { width: 75%; max-width: 280px; height: auto; animation: float 3s ease-in-out infinite; }
+        .logo-fallback-text { font-size: 2rem; font-weight: 900; letter-spacing: 4px; background: linear-gradient(135deg, #f5d061 0%, #e5b842 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .welcome-tag { background: rgba(229,184,66,0.1); border: 1px solid rgba(229,184,66,0.3); padding: 5px 15px; border-radius: 30px; font-size: 0.7rem; font-weight: 600; margin-top: 10px; display: inline-block; }
+        
+        .form-workspace { flex-grow: 1; padding: 30px 24px; display: flex; flex-direction: column; }
+        .page-title { text-align: center; font-size: 1.4rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #ffffff; margin-bottom: 6px; }
+        .page-subline { text-align: center; font-size: 0.75rem; color: #9ca3af; margin-bottom: 28px; line-height: 1.5; }
+        
+        form { display: flex; flex-direction: column; gap: 18px; }
+        .profile-input-wrapper { width: 100%; text-align: left; }
+        .profile-input-wrapper label { font-size: 0.7rem; color: #9ca3af; text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .input-row-container { width: 100%; background: #1b203a; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; display: flex; align-items: center; padding: 0 16px; height: 52px; transition: all 0.3s ease; }
+        .input-row-container:focus-within { border-color: #e5b842; box-shadow: 0 0 0 3px rgba(229,184,66,0.1); }
+        .input-row-container i { font-size: 1rem; color: #e5b842; width: 24px; text-align: center; }
+        .input-row-container input { width: 100%; border: none; background: transparent; color: #ffffff; font-size: 0.9rem; height: 100%; outline: none; }
+        .input-row-container input::placeholder { color: #4a5568; }
+        
+        .login-hint { font-size: 0.65rem; color: #636b8f; margin-top: 6px; display: flex; align-items: center; gap: 6px; }
+        .login-hint i { font-size: 0.6rem; color: #e5b842; }
+        
+        .recovery-links { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; margin-bottom: 5px; }
+        .recovery-links a { color: #e5b842; text-decoration: none; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
+        .recovery-links a:hover { text-decoration: underline; gap: 8px; }
+        .recovery-links a.danger-link { color: #ef4444; }
+        
+        .btn-submit { width: 100%; height: 52px; background: linear-gradient(135deg, #f5d061 0%, #e5b842 100%); border: none; border-radius: 12px; color: #111424; font-size: 0.9rem; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.4); transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-submit:hover { transform: scale(1.02); box-shadow: 0 4px 20px rgba(229,184,66,0.3); }
+        .btn-submit:active { transform: scale(0.98); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        
+        .features-row { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05); gap: 15px; }
+        .feature-item { flex: 1; text-align: center; }
+        .feature-item i { font-size: 1.2rem; color: #e5b842; margin-bottom: 6px; display: block; }
+        .feature-item span { font-size: 0.6rem; color: #9ca3af; display: block; }
+        
+        .loading-spinner { width: 18px; height: 18px; border: 2px solid #111424; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Security Notice */
+        .security-notice { background: rgba(16, 185, 129, 0.05); border-radius: 10px; padding: 12px 15px; margin-top: 20px; display: flex; align-items: center; gap: 10px; border: 1px solid rgba(16, 185, 129, 0.15); }
+        .security-notice i { color: #10b981; font-size: 0.9rem; }
+        .security-notice p { font-size: 0.65rem; color: #9ca3af; line-height: 1.3; }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-
-        <!-- Custom Beautiful Toast Alerts Modal -->
-        <div class="toast-notification" id="customToast">
-            <i class="fa-solid fa-circle-check" id="toastIcon" style="color: #10b981;"></i>
-            <div class="toast-text" id="toastMsg">Notification System Active.</div>
-        </div>
-
-        <div class="hero-banner">
-            <div class="logo-box">
-                <!-- Fallback handler built right into the tag -->
-                <img src="logo.png" alt="NEXUS EARN" class="brand-logo" onerror="this.style.display='none'; document.getElementById('textLogo').style.display='block';">
-                <div id="textLogo" class="logo-fallback-text" style="display: none;">NEXUS EARN</div>
-            </div>
-        </div>
-
-        <div class="form-workspace">
-            <h2 class="page-title">Sign In</h2>
-            <p class="page-subline">Provide your account credentials to access your active revenue terminals.</p>
-
-            <form id="nexusLoginForm">
-                
-                <div class="profile-input-wrapper">
-                    <label>Account Identifier</label>
-                    <div class="input-row-container">
-                        <i class="fa-solid fa-circle-user"></i>
-                        <input type="text" id="loginIdentifier"placeholder= Gmail required>
-                    </div>
-                </div>
-
-                <div class="profile-input-wrapper">
-                    <label>Security Password</label>
-                    <div class="input-row-container">
-                        <i class="fa-solid fa-lock"></i>
-                        <input type="password" id="loginPass" placeholder="Enter secure password" required>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-submit">Verify Credentials</button>
-
-                <div class="recovery-links">
-                    <a href="forgot-password.html" class="danger-link">
-                        <i class="fa-solid fa-unlock-keyhole" style="font-size: 0.75rem;"></i> Forgot Password?
-                    </a>
-                    <a href="index.html">Create account <i class="fa-solid fa-arrow-right-long"></i></a>
-                </div>
-
-            </form>
-        </div>
-
+<div class="app-container">
+    <div class="toast-notification" id="customToast">
+        <i class="fa-solid fa-circle-check" id="toastIcon" style="color: #10b981;"></i>
+        <div class="toast-text" id="toastMsg">Notification System Active.</div>
     </div>
 
-    <!-- FIREBASE INTEGRATION SCRIPTS -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    <div class="hero-banner">
+        <div class="logo-box">
+            <img src="logo.png" alt="NEXUS EARN" class="brand-logo" onerror="this.style.display='none'; document.getElementById('textLogo').style.display='block';">
+            <div id="textLogo" class="logo-fallback-text" style="display: none;">NEXUS EARN</div>
+            <div class="welcome-tag"><i class="fa-solid fa-shield-halved"></i> Secure Investment Platform</div>
+        </div>
+    </div>
 
-        // Firebase configuration setup
-        const firebaseConfig = {
-            apiKey: "AIzaSyDUIQ5s-MI2V3rsi_uWBbRb5YGcFmjjKK4",
-            authDomain: "nexus-earn-1.firebaseapp.com",
-            projectId: "nexus-earn-1",
-            storageBucket: "nexus-earn-1.firebasestorage.app",
-            messagingSenderId: "779765076952",
-            appId: "1:779765076952:web:fa5fac51bef82e74b598ad"
-        };
+    <div class="form-workspace">
+        <h2 class="page-title">Welcome Back</h2>
+        <p class="page-subline">Login to access your investment dashboard and manage your daily earnings</p>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        <form id="nexusLoginForm">
+            <div class="profile-input-wrapper">
+                <label><i class="fa-regular fa-envelope"></i> Email</label>
+                <div class="input-row-container">
+                    <i class="fa-solid fa-circle-user"></i>
+                    <input type="text" id="loginIdentifier" placeholder="Enter your email, username or phone number" required autocomplete="username">
+                </div>
+                <div class="login-hint"><i class="fa-solid fa-info-circle"></i> YOU CAN LOGIN WITH ONLY YOUR EMAIL</div>
+            </div>
 
-        // Premium Notification Center Modal
-        function showToast(message, isSuccess = true) {
-            const toast = document.getElementById('customToast');
-            const icon = document.getElementById('toastIcon');
-            const text = document.getElementById('toastMsg');
-            
-            text.innerText = message;
-            icon.className = isSuccess ? "fa-solid fa-circle-check" : "fa-solid fa-triangle-exclamation";
-            icon.style.color = isSuccess ? "#10b981" : "#ef4444";
-            
-            toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 3500);
+            <div class="profile-input-wrapper">
+                <label><i class="fa-solid fa-lock"></i> Password</label>
+                <div class="input-row-container">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="loginPass" placeholder="Enter your secure password" required autocomplete="current-password">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit" id="loginBtn">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Access Dashboard
+            </button>
+
+            <div class="recovery-links">
+                <a href="forgot-password.html" class="danger-link"><i class="fa-solid fa-unlock-keyhole"></i> Forgot Password?</a>
+                <a href="index.html"><i class="fa-solid fa-user-plus"></i> Create Account</a>
+            </div>
+        </form>
+
+        <div class="features-row">
+            <div class="feature-item"><i class="fa-solid fa-chart-line"></i><span>Up to 30% ROI</span></div>
+            <div class="feature-item"><i class="fa-solid fa-calendar-week"></i><span>50 Days Plan</span></div>
+            <div class="feature-item"><i class="fa-solid fa-clock"></i><span>24/7 Support</span></div>
+        </div>
+
+        <div class="security-notice">
+            <i class="fa-solid fa-shield-halved"></i>
+            <p>Your account is protected with bank-grade encryption. All data is securely stored.</p>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDUIQ5s-MI2V3rsi_uWBbRb5YGcFmjjKK4",
+        authDomain: "nexus-earn-1.firebaseapp.com",
+        projectId: "nexus-earn-1",
+        storageBucket: "nexus-earn-1.firebasestorage.app",
+        messagingSenderId: "779765076952",
+        appId: "1:779765076952:web:fa5fac51bef82e74b598ad"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    function showToast(message, isSuccess = true) {
+        const toast = document.getElementById('customToast');
+        const icon = document.getElementById('toastIcon');
+        const text = document.getElementById('toastMsg');
+        text.innerHTML = message;
+        icon.className = isSuccess ? "fa-solid fa-circle-check" : "fa-solid fa-triangle-exclamation";
+        icon.style.color = isSuccess ? "#10b981" : "#ef4444";
+        toast.classList.add('show');
+        setTimeout(() => { toast.classList.remove('show'); }, 4000);
+    }
+
+    async function showSweetAlert(title, message, icon, timer = 2000) {
+        return Swal.fire({
+            title: title,
+            text: message,
+            icon: icon,
+            background: '#111424',
+            color: '#fff',
+            confirmButtonColor: '#e5b842',
+            timer: timer,
+            showConfirmButton: true,
+            backdrop: 'rgba(0,0,0,0.8)'
+        });
+    }
+
+    document.getElementById('nexusLoginForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        const loginBtn = document.getElementById('loginBtn');
+        const originalText = loginBtn.innerHTML;
+        loginBtn.innerHTML = '<div class="loading-spinner"></div> Authenticating...';
+        loginBtn.disabled = true;
+        
+        const inputVal = document.getElementById('loginIdentifier').value.trim();
+        const password = document.getElementById('loginPass').value;
+        
+        if (!inputVal || !password) {
+            await showSweetAlert('Missing Fields', 'Please enter both your identifier and password', 'warning', 2500);
+            loginBtn.innerHTML = originalText;
+            loginBtn.disabled = false;
+            return;
         }
-
-        document.getElementById('nexusLoginForm').addEventListener('submit', async function(event) {
-            event.preventDefault(); 
+        
+        if (password.length < 4) {
+            await showSweetAlert('Invalid Password', 'Password must be at least 4 characters', 'error', 2500);
+            loginBtn.innerHTML = originalText;
+            loginBtn.disabled = false;
+            return;
+        }
+        
+        try {
+            let targetEmail = "";
+            let foundVia = "";
             
-            const inputVal = document.getElementById('loginIdentifier').value.trim();
-            const passVal = document.getElementById('loginPass').value;
-            
-            // Gmail Formatting Guard
+            // Case 1: Email address
             if (inputVal.includes('@')) {
-                if (!inputVal.toLowerCase().endsWith('@gmail.com') || inputVal.match(/@/g).length !== 1) {
-                    showToast("Input contains '@' but is not a valid structured @gmail.com identifier.", false);
-                    return;
-                }
-            }
-            
-            // Numeric Mobile Boundaries Guard
-            const digitsMatch = inputVal.replace(/\D/g, '');
-            if (digitsMatch.length > 0 && /^\d+$/.test(inputVal)) {
-                if (digitsMatch.length < 10 || digitsMatch.length > 11) {
-                    showToast("Pure numeric inputs must match mobile dimensions (10 or 11 digits).", false);
-                    return;
-                }
-            }
-
-            if (passVal.length < 4) {
-                showToast("Security key length is invalid. Please double check credentials.", false);
-                return;
-            }
-
-            try {
-                let targetEmail = "";
-
-                // Look up user account dynamically via custom identification strings
                 if (inputVal.toLowerCase().endsWith('@gmail.com')) {
                     targetEmail = inputVal.toLowerCase();
-                } else if (/^\d+$/.test(inputVal.replace(/\D/g, ''))) {
-                    // Normalize phone structure to drop leading zero and query 234 schema matching register data
-                    const formattedPhone = inputVal.replace(/\D/g, '').replace(/^0+/, '');
-                    const phoneQuery = query(collection(db, "users"), where("phone", "==", "234" + formattedPhone));
-                    const querySnap = await getDocs(phoneQuery);
-                    if (!querySnap.empty) {
-                        targetEmail = querySnap.docs[0].data().email;
-                    }
+                    foundVia = "email";
                 } else {
-                    // Match identifier string query against unique username field parameter
-                    const userQuery = query(collection(db, "users"), where("username", "==", inputVal));
-                    const querySnap = await getDocs(userQuery);
-                    if (!querySnap.empty) {
-                        targetEmail = querySnap.docs[0].data().email;
-                    }
-                }
-
-                if (!targetEmail) {
-                    showToast("Account Error: Profile identifier not found.", false);
+                    await showSweetAlert('Invalid Email', 'Please use a valid Gmail address (@gmail.com)', 'error', 2500);
+                    loginBtn.innerHTML = originalText;
+                    loginBtn.disabled = false;
                     return;
                 }
-
-                // 1. Cross check login credentials against Firebase Authentication core
-                const userCredential = await signInWithEmailAndPassword(auth, targetEmail, passVal);
-                const authenticatedUser = userCredential.user;
-
-                // 2. Fetch direct profile metrics document profile from users database tree
-                const profileDocRef = doc(db, "users", authenticatedUser.uid);
-                const profileDocSnapshot = await getDoc(profileDocRef);
-
-                if (profileDocSnapshot.exists()) {
-                    const profileData = profileDocSnapshot.data();
-
-                    // 3. Check for specific status restrictions if necessary
-                    if (profileData.status === "suspended") {
-                        showToast("Account Deactivated: Access restricted by security protocols.", false);
-                        await signOut(auth); 
-                        return;
-                    }
-
-                    // INSTANT ROUTING: Instantly jump to dashboard with zero delay barriers!
-                    window.location.href = "dashboard.html";
-
-                } else {
-                    showToast("Account Error: Profile data records missing.", false);
-                    await signOut(auth);
+            }
+            // Case 2: Phone number (only digits)
+            else if (/^\d+$/.test(inputVal)) {
+                let phoneDigits = inputVal.replace(/\D/g, '');
+                if (phoneDigits.length === 11) {
+                    phoneDigits = phoneDigits.substring(1);
                 }
-
-            } catch (authError) {
-                console.error(authError);
-                if (authError.code === 'auth/wrong-password' || authError.code === 'auth/user-not-found') {
-                    showToast("Login Failed: Incorrect credential matches.", false);
-                } else {
-                    showToast("Access Denied: Authentication check failed.", false);
+                const formattedPhone = "234" + phoneDigits;
+                const phoneQuery = query(collection(db, "users"), where("phone", "==", formattedPhone));
+                const querySnap = await getDocs(phoneQuery);
+                if (!querySnap.empty) {
+                    targetEmail = querySnap.docs[0].data().email;
+                    foundVia = "phone number";
                 }
             }
-        });
-    </script>
+            // Case 3: Username
+            else {
+                const userQuery = query(collection(db, "users"), where("username", "==", inputVal.toLowerCase()));
+                const querySnap = await getDocs(userQuery);
+                if (!querySnap.empty) {
+                    targetEmail = querySnap.docs[0].data().email;
+                    foundVia = "username";
+                }
+            }
+            
+            if (!targetEmail) {
+                await showSweetAlert('Account Not Found', 'No account found with the provided credentials. Please check and try again.', 'error', 3000);
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
+                return;
+            }
+            
+            // Attempt login
+            const userCredential = await signInWithEmailAndPassword(auth, targetEmail, password);
+            const user = userCredential.user;
+            
+            // Verify user exists in Firestore
+            const userQuery = query(collection(db, "users"), where("uid", "==", user.uid));
+            const userSnap = await getDocs(userQuery);
+            
+            if (userSnap.empty) {
+                await showSweetAlert('Account Error', 'Account data not found. Please contact support.', 'error', 3000);
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
+                return;
+            }
+            
+            const userData = userSnap.docs[0].data();
+            
+            if (userData.status === "suspended") {
+                await showSweetAlert('Account Suspended', 'Your account has been suspended. Please contact customer support for assistance.', 'error', 3500);
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
+                return;
+            }
+            
+   // Show success message
+await showSweetAlert('Login Successful!', `Welcome back, ${userData.username || 'Investor'}! Redirecting to your dashboard...`, 'success', 2000);
+
+setTimeout(() => {
+    window.location.href = "info.html?redirect=dashboard.html";
+}, 1800);
+            
+        } catch (error) {
+            console.error("Login error:", error);
+            
+            if (error.code === 'auth/wrong-password') {
+                await showSweetAlert('Incorrect Password', 'The password you entered is incorrect. Please try again.', 'error', 3000);
+            } else if (error.code === 'auth/user-not-found') {
+                await showSweetAlert('Account Not Found', 'No account found with these credentials. Please register first.', 'error', 3000);
+            } else if (error.code === 'auth/invalid-email') {
+                await showSweetAlert('Invalid Email', 'The email format is invalid. Please check and try again.', 'error', 2500);
+            } else if (error.code === 'auth/too-many-requests') {
+                await showSweetAlert('Too Many Attempts', 'Too many failed login attempts. Please try again later.', 'error', 3500);
+            } else if (error.code === 'auth/network-request-failed') {
+                await showSweetAlert('Network Error', 'Please check your internet connection and try again.', 'error', 3000);
+            } else {
+                await showSweetAlert('Login Failed', error.message || 'An error occurred. Please try again.', 'error', 3000);
+            }
+            
+            loginBtn.innerHTML = originalText;
+            loginBtn.disabled = false;
+        }
+    });
+</script>
 </body>
 </html>

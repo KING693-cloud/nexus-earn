@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    
+    <meta property="og:title" content="NEXUS EARN - Announcements">
+    <meta property="og:description" content="Latest updates and announcements from NEXUS EARN">
+    <meta property="og:image" content="https://nexus-earn.com/logo.png">
+    <meta property="og:url" content="https://nexus-earn.com">
+    
+    <title>NEXUS EARN - Announcements & Updates</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: #0b0d17; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        
+        .info-container {
+            max-width: 450px;
+            width: 100%;
+            background: #111424;
+            border-radius: 28px;
+            overflow: hidden;
+            border: 1px solid rgba(229,184,66,0.2);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            animation: fadeInUp 0.4s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .info-header {
+            background: linear-gradient(135deg, #1b203a, #161a2e);
+            padding: 24px;
+            text-align: center;
+            border-bottom: 1px solid rgba(229,184,66,0.1);
+            position: relative;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.05);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+        
+        .close-btn:hover {
+            background: rgba(239,68,68,0.2);
+            color: #ef4444;
+            transform: rotate(90deg);
+        }
+        
+        .info-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(229,184,66,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            border: 2px solid rgba(229,184,66,0.3);
+        }
+        
+        .info-icon i {
+            font-size: 32px;
+            color: #e5b842;
+        }
+        
+        .info-header h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+        
+        .info-header p {
+            font-size: 0.7rem;
+            color: #9ca3af;
+        }
+        
+        .info-body {
+            padding: 24px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        /* Custom scrollbar */
+        .info-body::-webkit-scrollbar { width: 4px; }
+        .info-body::-webkit-scrollbar-track { background: #1b203a; }
+        .info-body::-webkit-scrollbar-thumb { background: #e5b842; border-radius: 4px; }
+        
+        .update-item {
+            background: #1b203a;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
+            border-left: 3px solid #e5b842;
+            transition: all 0.3s;
+        }
+        
+        .update-item:hover {
+            transform: translateX(3px);
+            background: #1f2544;
+        }
+        
+        .update-date {
+            display: inline-block;
+            font-size: 0.6rem;
+            background: rgba(229,184,66,0.15);
+            padding: 3px 10px;
+            border-radius: 20px;
+            color: #e5b842;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .update-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .update-title i {
+            color: #e5b842;
+            font-size: 0.9rem;
+        }
+        
+        .update-desc {
+            font-size: 0.8rem;
+            color: #a1a1aa;
+            line-height: 1.5;
+        }
+        
+        .highlight {
+            background: rgba(229,184,66,0.08);
+            border-left-color: #10b981;
+        }
+        
+        .highlight .update-title i {
+            color: #10b981;
+        }
+        
+        .info-footer {
+            padding: 20px 24px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn-dismiss {
+            flex: 2;
+            background: linear-gradient(135deg, #f5d061, #e5b842);
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            color: #111424;
+            font-weight: 800;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-dismiss:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(229,184,66,0.3);
+        }
+        
+        .btn-remind {
+            flex: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 14px;
+            border-radius: 12px;
+            color: #9ca3af;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-remind:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+        
+        .dont-show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+        }
+        
+        .dont-show input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #e5b842;
+        }
+        
+        .dont-show label {
+            font-size: 0.7rem;
+            color: #9ca3af;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 480px) {
+            .info-container { border-radius: 20px; }
+            .info-body { padding: 20px; }
+            .update-item { padding: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="info-container">
+    <div class="info-header">
+        <div class="close-btn" onclick="closeAndRedirect()">
+            <i class="fa-solid fa-times"></i>
+        </div>
+        <div class="info-icon">
+            <i class="fa-solid fa-bullhorn"></i>
+        </div>
+        <h2>📢 What's New</h2>
+        <p>Stay updated with latest announcements</p>
+    </div>
+    
+    <div class="info-body">
+        <!-- Update 1 - Latest -->
+        <div class="update-item highlight">
+            <div class="update-date">
+                <i class="fa-regular fa-calendar"></i> June 9, 2026
+            </div>
+            <div class="update-title">
+                <i class="fa-solid fa-gem"></i> New VIP Plans Available!
+            </div>
+            <div class="update-desc">
+                VIP 8 to VIP 13 plans are now available with up to 30% daily ROI. Check the Investment Levels section to upgrade your plan.
+            </div>
+        </div>
+        
+        <!-- Update 2 -->
+        <div class="update-item">
+            <div class="update-date">
+                <i class="fa-regular fa-calendar"></i> June 5, 2026
+            </div>
+            <div class="update-title">
+                <i class="fa-solid fa-chart-line"></i> Daily Earnings Increased!
+            </div>
+            <div class="update-desc">
+                All VIP plans now include an extra ₦350 daily bonus. Your daily earnings have been automatically updated.
+            </div>
+        </div>
+        
+        <!-- Update 3 -->
+        <div class="update-item">
+            <div class="update-date">
+                <i class="fa-regular fa-calendar"></i> June 1, 2026
+            </div>
+            <div class="update-title">
+                <i class="fa-solid fa-users"></i> Referral Bonus Boosted
+            </div>
+            <div class="update-desc">
+                Referral commission increased to 10% + ₦300 first referral bonus! Invite friends and earn more.
+            </div>
+        </div>
+        
+        <!-- Update 4 -->
+        <div class="update-item">
+            <div class="update-date">
+                <i class="fa-regular fa-calendar"></i> May 28, 2026
+            </div>
+            <div class="update-title">
+                <i class="fa-solid fa-clock"></i> Withdrawal Hours Update
+            </div>
+            <div class="update-desc">
+                Withdrawal requests are now processed 9AM - 9PM daily. Requests outside these hours will be processed the next day.
+            </div>
+        </div>
+        
+        <!-- Reminder Box -->
+        <div class="dont-show" onclick="toggleDontShow()">
+            <input type="checkbox" id="dontShowAgain">
+            <label for="dontShowAgain">Don't show this again for 24 hours</label>
+        </div>
+    </div>
+    
+    <div class="info-footer">
+        <button class="btn-remind" onclick="remindLater()">
+            <i class="fa-regular fa-bell"></i> Remind Later
+        </button>
+        <button class="btn-dismiss" onclick="closeAndRedirect()">
+            Got it! <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+    // Check URL parameters to know where to redirect
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectTo = urlParams.get('redirect') || 'dashboard.html';
+    
+    function closeAndRedirect() {
+        // Save to localStorage if "don't show again" is checked
+        const dontShow = document.getElementById('dontShowAgain').checked;
+        if (dontShow) {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            localStorage.setItem('nexusInfoHiddenUntil', tomorrow.getTime());
+        }
+        window.location.href = redirectTo;
+    }
+    
+    function remindLater() {
+        // Remind in 6 hours
+        const later = new Date();
+        later.setHours(later.getHours() + 6);
+        localStorage.setItem('nexusInfoHiddenUntil', later.getTime());
+        window.location.href = redirectTo;
+    }
+    
+    function toggleDontShow() {
+        const checkbox = document.getElementById('dontShowAgain');
+        checkbox.checked = !checkbox.checked;
+    }
+</script>
+</body>
+</html>

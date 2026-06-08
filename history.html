@@ -1,39 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>    <meta property="og:title" content="NEXUS EARN - Secure Financial Ecosystem">
-    <meta property="og:description" content="Join the NEXUS ecosystem and start earning today. Secure, reliable, and fast.">
-    <meta property="og:image" content="https://nexus-earn.com/nexus-logo.png">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    
+    <meta property="og:title" content="NEXUS EARN - Transaction History">
+    <meta property="og:description" content="View your deposits, withdrawals, and earnings history">
+    <meta property="og:image" content="https://nexus-earn.com/logo.png">
     <meta property="og:url" content="https://nexus-earn.com">
     <meta property="og:type" content="website">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS EARN - Statement</title>
+    
+    <title>NEXUS EARN - Transaction History</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root { --gold: #e5b842; --bg: #0b0d17; --card: rgba(27, 32, 58, 0.6); }
-        body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; }
-        .app-container { max-width: 480px; margin: auto; min-height: 100vh; background: #0b0d17; padding-bottom: 30px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { background: #0b0d17; color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; }
         
-        .header { padding: 20px; display: flex; align-items: center; border-bottom: 1px solid #1f2544; background: #161a2e; }
-        .back-btn { color: var(--gold); font-size: 20px; margin-right: 15px; text-decoration: none; }
+        .app-container { max-width: 480px; width: 100%; min-height: 100vh; background: #111424; margin: auto; padding-bottom: 40px; }
+        
+        .header { padding: 20px 24px; display: flex; align-items: center; background: #161a2e; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .back-btn { color: #e5b842; font-size: 1.1rem; cursor: pointer; text-decoration: none; margin-right: 15px; }
+        .header-title { font-size: 1rem; font-weight: 700; text-transform: uppercase; color: #fff; }
         
         .logo-box { text-align: center; padding: 20px; }
         .logo-box img { width: 80px; border-radius: 12px; }
-
+        
+        .total-earned-card {
+            background: linear-gradient(135deg, #1b203a, #161a2e);
+            margin: 0 15px 20px 15px;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(229,184,66,0.2);
+        }
+        .total-earned-label { font-size: 0.7rem; color: #a1a1aa; text-transform: uppercase; letter-spacing: 1px; }
+        .total-earned-amount { font-size: 2.2rem; font-weight: 800; color: #10b981; margin-top: 8px; }
+        .total-earned-sub { font-size: 0.65rem; color: #636b8f; margin-top: 5px; }
+        
         .nav { display: flex; padding: 0 15px 15px; gap: 10px; }
-        .tab { flex: 1; padding: 10px; background: #161a2e; text-align: center; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; border: 1px solid #2d345a; }
-        .tab.active { background: var(--gold); color: #000; border: none; }
+        .tab { flex: 1; padding: 12px 10px; background: #161a2e; text-align: center; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold; border: 1px solid #2d345a; transition: all 0.3s; }
+        .tab.active { background: #e5b842; color: #000; border: none; }
         
         .pane { display: none; padding: 0 15px; }
         .pane.active { display: block; }
         
-        .card { background: var(--card); backdrop-filter: blur(10px); padding: 16px; margin-bottom: 10px; border-radius: 14px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255,255,255,0.05); }
-        .debit { border-left: 4px solid #ef4444; }
-        .credit { border-left: 4px solid #10b981; }
+        .tx-card {
+            background: #161a2e;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 3px solid;
+            transition: transform 0.2s;
+        }
+        .tx-card:hover { transform: translateX(3px); }
+        .tx-card.deposit { border-left-color: #10b981; }
+        .tx-card.withdrawal { border-left-color: #e5b842; }
+        .tx-card.task { border-left-color: #3b82f6; }
         
-        #loader { text-align: center; padding: 40px; }
-        .spinner { border: 3px solid #333; border-top: 3px solid var(--gold); width: 25px; height: 25px; border-radius: 50%; animation: spin 1s linear infinite; margin: auto; }
+        .tx-left { flex: 1; }
+        .tx-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 5px; }
+        .tx-date { font-size: 0.65rem; color: #636b8f; }
+        .tx-tax { font-size: 0.6rem; color: #a1a1aa; margin-top: 3px; }
+        
+        .tx-right { text-align: right; }
+        .tx-amount { font-weight: 800; font-size: 1rem; }
+        .tx-amount.positive { color: #10b981; }
+        .tx-amount.negative { color: #ef4444; }
+        .tx-status { font-size: 0.6rem; padding: 2px 8px; border-radius: 20px; margin-top: 5px; display: inline-block; }
+        .status-pending { background: rgba(229,184,66,0.15); color: #e5b842; }
+        .status-approved { background: rgba(16,185,129,0.15); color: #10b981; }
+        .status-rejected { background: rgba(239,68,68,0.15); color: #ef4444; }
+        
+        .empty-state { text-align: center; padding: 40px 20px; color: #636b8f; }
+        .empty-state i { font-size: 40px; margin-bottom: 15px; opacity: 0.5; }
+        
+        #loader { text-align: center; padding: 60px 20px; }
+        .spinner { border: 3px solid #2d345a; border-top: 3px solid #e5b842; width: 40px; height: 40px; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .refresh-btn { background: #e5b842; border: none; padding: 10px 20px; border-radius: 25px; color: #000; font-weight: bold; cursor: pointer; margin: 15px auto 30px; display: block; width: 80%; }
     </style>
 </head>
 <body>
@@ -41,22 +89,35 @@
 <div class="app-container">
     <div class="header">
         <a href="dashboard.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
-        <span style="font-weight: 800; letter-spacing: 1px;">TRANSACTION HISTORY</span>
+        <span class="header-title">TRANSACTION HISTORY</span>
     </div>
 
-    <div class="logo-box"><img src="logo.png" alt="Logo"></div>
+    <div class="logo-box">
+        <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
+        <h3 style="color: #e5b842; margin-top: 5px;">NEXUS EARN</h3>
+    </div>
+
+    <div class="total-earned-card">
+        <div class="total-earned-label"><i class="fa-solid fa-chart-line"></i> TOTAL EARNED</div>
+        <div class="total-earned-amount" id="totalEarnedDisplay">₦0</div>
+        <div class="total-earned-sub">From daily mining, bonuses, check-ins & referrals</div>
+    </div>
 
     <div class="nav">
-        <div class="tab active" onclick="switchTab(this, 'recharge')">Deposits</div>
-        <div class="tab" onclick="switchTab(this, 'withdraw')">Withdrawals</div>
-        <div class="tab" onclick="switchTab(this, 'earnings')">Tasks</div>
+        <div class="tab active" data-tab="deposit">Deposits</div>
+        <div class="tab" data-tab="withdraw">Withdrawals</div>
+        <div class="tab" data-tab="task">Tasks</div>
+        <div class="tab" data-tab="all">All</div>
     </div>
 
-    <div id="loader"><div class="spinner"></div></div>
+    <div id="loader"><div class="spinner"></div><p>Loading...</p></div>
 
-    <div id="recharge" class="pane active"></div>
+    <div id="deposit" class="pane active"></div>
     <div id="withdraw" class="pane"></div>
-    <div id="earnings" class="pane"></div>
+    <div id="task" class="pane"></div>
+    <div id="all" class="pane"></div>
+
+    <button class="refresh-btn" id="refreshBtn" style="display: none;"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
 </div>
 
 <script type="module">
@@ -64,60 +125,246 @@
     import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    const db = getFirestore(initializeApp({
+    const firebaseConfig = {
         apiKey: "AIzaSyDUIQ5s-MI2V3rsi_uWBbRb5YGcFmjjKK4",
-        projectId: "nexus-earn-1"
-    }));
-
-    window.switchTab = (el, id) => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
-        el.classList.add('active');
-        document.getElementById(id).classList.add('active');
+        authDomain: "nexus-earn-1.firebaseapp.com",
+        projectId: "nexus-earn-1",
+        storageBucket: "nexus-earn-1.firebasestorage.app",
+        messagingSenderId: "779765076952",
+        appId: "1:779765076952:web:fa5fac51bef82e74b598ad"
     };
 
-    onAuthStateChanged(getAuth(), async (user) => {
-        if (!user) return window.location.href = "login.html";
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
 
-        const [ledgerSnap, withdrawSnap] = await Promise.all([
-            getDocs(query(collection(db, "ledger"), where("uid", "==", user.uid))),
-            getDocs(query(collection(db, "withdrawals"), where("uid", "==", user.uid)))
-        ]);
+    let currentUser = null;
+    let isLoading = false;
 
-        document.getElementById('loader').style.display = 'none';
-
-        // Combine and Sort strictly by timestamp
-        let allTransactions = [];
-        ledgerSnap.forEach(d => allTransactions.push({ ...d.data(), id: d.id, category: 'ledger' }));
-        withdrawSnap.forEach(d => allTransactions.push({ ...d.data(), id: d.id, category: 'withdraw' }));
-
-        allTransactions.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-
-        allTransactions.forEach(data => {
-            const t = (data.title || "").toLowerCase();
-            const amt = parseFloat(data.amount || 0);
-
-            if (data.category === 'withdraw' || t.includes("activation") || t.includes("vip")) {
-                renderCard('withdraw', data.title || "Withdrawal", amt, true);
-            } else if (t.includes("paystack") || t.includes("deposit")) {
-                renderCard('recharge', data.title, amt, false);
-            } else {
-                renderCard('earnings', data.title, amt, false);
-            }
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const tabId = tab.getAttribute('data-tab');
+            document.querySelectorAll('.pane').forEach(pane => pane.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
         });
     });
 
-    function renderCard(paneId, title, amount, isDebit) {
-        const div = document.createElement('div');
-        div.className = `card ${isDebit ? 'debit' : 'credit'}`;
-        div.innerHTML = `
-            <div><strong>${title}</strong><br><small style="opacity:0.5; font-size:10px;">SUCCESSFUL</small></div>
-            <div style="color:${isDebit ? '#ef4444' : '#10b981'}; font-weight:800;">
-                ${isDebit ? '-' : '+'}₦${amount.toLocaleString()}
+    function formatDate(timestamp) {
+        if (!timestamp) return 'Just now';
+        let date;
+        if (timestamp?.seconds) date = new Date(timestamp.seconds * 1000);
+        else if (timestamp?.toDate) date = timestamp.toDate();
+        else date = new Date(timestamp);
+        return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function renderCard(container, tx, type) {
+        const isWithdrawal = (type === "withdrawal");
+        const isDeposit = (type === "deposit");
+        
+        let amount = parseFloat(tx.amount || tx.grossAmount || 0);
+        let prefix = '+';
+        let amountClass = 'positive';
+        let displayAmount = amount;
+        let taxHtml = '';
+        
+        // ONLY user withdrawals have 10% tax deduction
+        if (isWithdrawal && tx.isVipActivation !== true && tx.title && !tx.title.toLowerCase().includes("activated")) {
+            prefix = '-';
+            amountClass = 'negative';
+            let gross = tx.grossAmount || amount;
+            let tax = tx.taxWithheld || (gross * 0.10);
+            let net = tx.netAmount || (gross - tax);
+            displayAmount = net;
+            taxHtml = `<div class="tx-tax"><i class="fa-solid fa-percent"></i> Tax 10%: -₦${tax.toLocaleString()}</div>`;
+        } 
+        // VIP activations - show full amount (no tax)
+        else if (isWithdrawal && tx.isVipActivation === true) {
+            prefix = '-';
+            amountClass = 'negative';
+            displayAmount = amount;
+        }
+        
+        let statusHtml = '';
+        if (isWithdrawal && tx.status) {
+            let statusText = tx.status === 'pending' ? 'Pending' : (tx.status === 'approved' ? 'Approved' : 'Rejected');
+            let statusClass = tx.status === 'pending' ? 'status-pending' : (tx.status === 'approved' ? 'status-approved' : 'status-rejected');
+            statusHtml = `<div class="tx-status ${statusClass}">${statusText}</div>`;
+        }
+        
+        let title = tx.title || (isWithdrawal ? 'Withdrawal Request' : (isDeposit ? 'Deposit' : 'Task Earning'));
+        if (isWithdrawal && tx.bankName && !tx.isVipActivation) title = `Withdrawal to ${tx.bankName}`;
+        
+        const card = document.createElement('div');
+        card.className = `tx-card ${type}`;
+        card.innerHTML = `
+            <div class="tx-left">
+                <div class="tx-title">${title}</div>
+                <div class="tx-date">${formatDate(tx.timestamp || tx.createdAt)}</div>
+                ${taxHtml}
+            </div>
+            <div class="tx-right">
+                <div class="tx-amount ${amountClass}">${prefix}₦${displayAmount.toLocaleString(undefined, {minimumFractionDigits:2})}</div>
+                ${statusHtml}
             </div>
         `;
-        document.getElementById(paneId).appendChild(div);
+        container.appendChild(card);
     }
+
+    async function loadAllData(userId) {
+        if (isLoading) return;
+        isLoading = true;
+        
+        const loader = document.getElementById('loader');
+        const refreshBtn = document.getElementById('refreshBtn');
+        loader.style.display = 'block';
+        refreshBtn.style.display = 'none';
+        
+        document.getElementById('deposit').innerHTML = '';
+        document.getElementById('withdraw').innerHTML = '';
+        document.getElementById('task').innerHTML = '';
+        document.getElementById('all').innerHTML = '';
+        
+        try {
+            const ledgerQuery = query(collection(db, "ledger"), where("uid", "==", userId));
+            const withdrawalQuery = query(collection(db, "withdrawals"), where("uid", "==", userId));
+            
+            const [ledgerSnap, withdrawalSnap] = await Promise.all([getDocs(ledgerQuery), getDocs(withdrawalQuery)]);
+            
+            let deposits = [];
+            let tasks = [];
+            let withdrawals = [];
+            let totalEarned = 0;
+            
+            let ledgerMap = new Map();
+            ledgerSnap.forEach(doc => {
+                const id = doc.id;
+                if (!ledgerMap.has(id)) {
+                    ledgerMap.set(id, doc.data());
+                }
+            });
+            
+            // Process ledger entries
+            ledgerMap.forEach((data, id) => {
+                const title = data.title || "";
+                const lowerTitle = title.toLowerCase();
+                const amount = parseFloat(data.amount || 0);
+                
+                // DEPOSITS: Only Paystack deposits (money added - NO TAX)
+                if (lowerTitle.includes("paystack") || lowerTitle === "deposit") {
+                    deposits.push({ ...data, id: id });
+                }
+                // VIP ACTIVATIONS - Go to WITHDRAWALS (money deducted - NO TAX, full amount)
+                else if (lowerTitle.includes("activated vip") || 
+                    lowerTitle.includes("vip 1") || lowerTitle.includes("vip 2") || lowerTitle.includes("vip 3") || 
+                    lowerTitle.includes("vip 4") || lowerTitle.includes("vip 5") || lowerTitle.includes("vip 6") ||
+                    lowerTitle.includes("vip 7") || lowerTitle.includes("starter") || lowerTitle.includes("bronze") ||
+                    lowerTitle.includes("silver") || lowerTitle.includes("gold") || lowerTitle.includes("platinum") ||
+                    lowerTitle.includes("diamond") || lowerTitle.includes("apex")) {
+                    withdrawals.push({ ...data, id: id, isVipActivation: true });
+                }
+                // DAILY PLAN RETURNS - Go to TASKS (earnings)
+                else if (lowerTitle.includes("daily plan returns") || lowerTitle.includes("daily plan")) {
+                    tasks.push({ ...data, id: id });
+                    totalEarned += amount;
+                }
+                // All other earnings (bonuses, check-ins, referrals) - Go to TASKS
+                else {
+                    tasks.push({ ...data, id: id });
+                    totalEarned += amount;
+                }
+            });
+            
+            // Process regular withdrawal requests (THESE HAVE 10% TAX)
+            let withdrawalMap = new Map();
+            withdrawalSnap.forEach(doc => {
+                const id = doc.id;
+                if (!withdrawalMap.has(id)) {
+                    withdrawalMap.set(id, doc.data());
+                }
+            });
+            
+            withdrawalMap.forEach((data, id) => {
+                withdrawals.push({ ...data, id: id, isVipActivation: false });
+            });
+            
+            // Sort by timestamp (newest first)
+            const sortByTime = (a,b) => {
+                const ta = a.timestamp?.seconds || 0;
+                const tb = b.timestamp?.seconds || 0;
+                return tb - ta;
+            };
+            deposits.sort(sortByTime);
+            withdrawals.sort(sortByTime);
+            tasks.sort(sortByTime);
+            
+            // Display Total Earned
+            document.getElementById('totalEarnedDisplay').innerHTML = '₦' + totalEarned.toLocaleString(undefined, {minimumFractionDigits:2});
+            
+            // DEPOSITS tab (Only Paystack deposits - NO TAX, full amount)
+            if (deposits.length === 0) {
+                document.getElementById('deposit').innerHTML = '<div class="empty-state"><i class="fa-solid fa-coins"></i><p>No deposits yet</p><p style="font-size:11px;margin-top:5px;">Paystack deposits appear here</p></div>';
+            } else {
+                deposits.forEach(tx => renderCard(document.getElementById('deposit'), tx, "deposit"));
+            }
+            
+            // WITHDRAWALS tab (Withdrawal requests HAVE 10% TAX, VIP activations NO TAX)
+            if (withdrawals.length === 0) {
+                document.getElementById('withdraw').innerHTML = '<div class="empty-state"><i class="fa-solid fa-money-bill-transfer"></i><p>No withdrawals yet</p><p style="font-size:11px;margin-top:5px;">Withdrawal requests & VIP plan purchases appear here</p></div>';
+            } else {
+                withdrawals.forEach(tx => renderCard(document.getElementById('withdraw'), tx, "withdrawal"));
+            }
+            
+            // TASKS tab (Daily plan returns + bonuses + check-ins + referrals)
+            if (tasks.length === 0) {
+                document.getElementById('task').innerHTML = '<div class="empty-state"><i class="fa-solid fa-tasks"></i><p>No task earnings yet</p><p style="font-size:11px;margin-top:5px;">Daily mining, check-ins & bonuses appear here</p></div>';
+            } else {
+                tasks.forEach(tx => renderCard(document.getElementById('task'), tx, "task"));
+            }
+            
+            // ALL tab
+            let allMap = new Map();
+            deposits.forEach(tx => allMap.set(tx.id, { ...tx, type: "deposit" }));
+            tasks.forEach(tx => allMap.set(tx.id, { ...tx, type: "task" }));
+            withdrawals.forEach(tx => allMap.set(tx.id, { ...tx, type: "withdrawal" }));
+            
+            let allTransactions = Array.from(allMap.values());
+            allTransactions.sort((a,b) => {
+                const ta = a.timestamp?.seconds || 0;
+                const tb = b.timestamp?.seconds || 0;
+                return tb - ta;
+            });
+            
+            if (allTransactions.length === 0) {
+                document.getElementById('all').innerHTML = '<div class="empty-state"><i class="fa-solid fa-receipt"></i><p>No transactions</p></div>';
+            } else {
+                allTransactions.forEach(tx => {
+                    renderCard(document.getElementById('all'), tx, tx.type);
+                });
+            }
+            
+            loader.style.display = 'none';
+            refreshBtn.style.display = 'block';
+            
+        } catch(e) {
+            console.error(e);
+            loader.innerHTML = `<div class="empty-state"><i class="fa-solid fa-circle-exclamation"></i><p>Error: ${e.message}</p><button onclick="location.reload()" style="margin-top:15px; background:#e5b842; border:none; padding:10px 20px; border-radius:8px;">Retry</button></div>`;
+        }
+        
+        isLoading = false;
+    }
+
+    onAuthStateChanged(auth, (user) => {
+        if (!user) { window.location.href = "login.html"; return; }
+        currentUser = user;
+        loadAllData(user.uid);
+    });
+
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+        if (currentUser) loadAllData(currentUser.uid);
+    });
 </script>
 </body>
 </html>
