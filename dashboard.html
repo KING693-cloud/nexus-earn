@@ -156,6 +156,15 @@
         .stat-mini-card i { font-size: 1.2rem; color: #e5b842; margin-bottom: 6px; display: block; }
         .stat-mini-card span { font-size: 0.6rem; color: #9ca3af; display: block; }
         .stat-mini-card strong { font-size: 0.9rem; color: #fff; display: block; margin-top: 4px; }
+
+        /* Voucher History Styles - NEW ADDITION */
+        .voucher-history-section { margin-top: 20px; background: #1b203a; border-radius: 16px; padding: 16px; border: 1px solid rgba(255,255,255,0.05); display: none; }
+        .voucher-history-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #e5b842; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .voucher-history-list { max-height: 200px; overflow-y: auto; }
+        .voucher-history-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.7rem; }
+        .voucher-history-code { font-family: monospace; color: #e5b842; font-weight: 700; }
+        .voucher-history-amount { color: #10b981; font-weight: 700; }
+        .voucher-history-date { font-size: 0.6rem; color: #6b7280; }
     </style>
 </head>
 <body>
@@ -204,14 +213,18 @@
         </div>
     </div>
 
+    <!-- UPDATED VOUCHER MODAL - Now supports progressive split vouchers -->
     <div id="couponModalPopup" class="portal-modal-overlay">
         <div class="portal-modal-card">
             <i class="fa-solid fa-xmark portal-modal-close" onclick="closePortalModal('couponModalPopup')"></i>
             <i class="fa-solid fa-envelope-open-text" style="font-size: 2rem; color: #e5b842; margin-bottom: 12px;"></i>
-            <h3>Voucher Activation</h3>
-            <p style="font-size: 0.78rem; color: #9ca3af; margin-bottom: 14px;">Input voucher strings to redeem platform credits.</p>
-            <input type="number" id="voucherCodeField" placeholder="00000" oninput="if(this.value.length > 5) this.value = this.value.slice(0,5);" style="width: 100%; height: 42px; background: #0b0d17; border: 1px solid rgba(229,184,66,0.3); border-radius: 6px; color: #fff; text-align: center; font-weight: 700; margin-bottom: 14px; font-size: 1.1rem; letter-spacing: 4px;">
-            <button class="btn-buy-package" id="claimVoucherBtn">Claim Code</button>
+            <h3>Progressive Voucher Redemption</h3>
+            <p style="font-size: 0.7rem; color: #9ca3af; margin-bottom: 14px;">First come, first served — claim early for maximum value!</p>
+            <input type="text" id="voucherCodeField" placeholder="Enter 8-digit voucher code" maxlength="8" style="width: 100%; height: 42px; background: #0b0d17; border: 1px solid rgba(229,184,66,0.3); border-radius: 6px; color: #fff; text-align: center; font-weight: 700; margin-bottom: 14px; font-size: 1rem; letter-spacing: 2px; text-transform: uppercase;">
+            <button class="btn-buy-package" id="claimVoucherBtn">Verify & Claim Voucher</button>
+            <div style="margin-top: 12px; font-size: 0.6rem; color: #6b7280;">
+                <i class="fa-solid fa-circle-info"></i> VIP 1+ required | Each voucher can be claimed once only
+            </div>
         </div>
     </div>
 
@@ -300,6 +313,12 @@
                     <div class="modification-notice-box" id="bankEditWarningNote"><i class="fa-solid fa-triangle-exclamation"></i> NOTE: Bank routing is securely encrypted. To modify your linked bank profile, please submit an identity verification request to Customer Support.</div>
                 </div>
                 <div class="profile-management-group"><div class="group-title"><i class="fa-solid fa-receipt"></i> Account History</div><p style="font-size: 0.78rem; color: #9ca3af; margin-bottom: 14px;">Review your historical mining records and transaction ledger logs.</p><a href="history.html" class="btn-buy-package" style="display: flex; align-items: center; justify-content: center; text-decoration: none; background: rgba(229,184,66,0.1); border: 1px solid #e5b842; color: #e5b842;"><i class="fa-solid fa-clock-rotate-left" style="margin-right: 8px;"></i> View History Log</a></div>
+                
+                <!-- Voucher History Section - NEW ADDITION -->
+                <div class="voucher-history-section" id="voucherHistorySection">
+                    <div class="voucher-history-title"><i class="fa-solid fa-clock-rotate-left"></i> Recent Voucher Redemptions</div>
+                    <div class="voucher-history-list" id="voucherHistoryList"></div>
+                </div>
             </div>
         </main>
 
@@ -309,7 +328,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, runTransaction, collection, addDoc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, runTransaction, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDUIQ5s-MI2V3rsi_uWBbRb5YGcFmjjKK4", authDomain: "nexus-earn-1.firebaseapp.com", projectId: "nexus-earn-1", storageBucket: "nexus-earn-1.firebasestorage.app", messagingSenderId: "779765076952", appId: "1:779765076952:web:fa5fac51bef82e74b598ad" };
         const app = initializeApp(firebaseConfig);
@@ -328,7 +347,7 @@
         window.openPortalModal = function(id) { document.getElementById(id).style.display = 'flex'; };
         window.closePortalModal = function(id) { document.getElementById(id).style.display = 'none'; };
 
-        onAuthStateChanged(auth, (user) => { if (user) { activeUserSession = user; if (dbSnapshotUnsubscriber) dbSnapshotUnsubscriber(); dbSnapshotUnsubscriber = onSnapshot(doc(db, "users", user.uid), (snapshot) => { if (snapshot.exists()) { localUserRecord = snapshot.data(); renderTerminalMetrics(localUserRecord); loadTeamBreakdownNetwork(user.uid, localUserRecord.referralCode); } else { window.location.href = "login.html"; } }); } else { window.location.href = "login.html"; } });
+        onAuthStateChanged(auth, (user) => { if (user) { activeUserSession = user; if (dbSnapshotUnsubscriber) dbSnapshotUnsubscriber(); dbSnapshotUnsubscriber = onSnapshot(doc(db, "users", user.uid), (snapshot) => { if (snapshot.exists()) { localUserRecord = snapshot.data(); renderTerminalMetrics(localUserRecord); loadTeamBreakdownNetwork(user.uid, localUserRecord.referralCode); loadVoucherHistory(); } else { window.location.href = "login.html"; } }); } else { window.location.href = "login.html"; } });
 
         function renderTerminalMetrics(data) {
             const currentBal = parseFloat(data.balance || 0), totalEarned = parseFloat(data.totalEarnings || 0), userTier = data.tierCode || 'NONE';
@@ -353,7 +372,7 @@
             else { document.getElementById('premiumDaysTrackerRow').style.display = 'none'; }
 
             const refCode = data.referralCode || data.username || "nx79402";
-document.getElementById('inviteLinkText').innerText = "https://nexus-earn.com/?ref=" + refCode;
+            document.getElementById('inviteLinkText').innerText = "https://nexus-earn.com/?ref=" + refCode;
             document.getElementById('teamSizeText').innerText = (data.directInvitesCount || 0) + " Users";
             document.getElementById('teamLvl2SizeText').innerText = (data.level2InvitesCount || 0) + " Users";
             document.getElementById('teamCapitalVolumeText').innerText = "₦" + parseFloat(data.teamCapitalVolume || 0).toLocaleString('en-US', { minimumFractionDigits: 2 });
@@ -419,7 +438,263 @@ document.getElementById('inviteLinkText').innerText = "https://nexus-earn.com/?r
 
         document.getElementById('saveBankBtn').addEventListener('click', async () => { if (!activeUserSession) return; const bank = document.getElementById('inputBankName').value; const holder = document.getElementById('inputBankHolderName').value.trim(); const num = document.getElementById('inputBankNumber').value.trim(); if (!bank || holder === "" || num.length !== 10) { closePortalModal('bankLockRulesPopup'); showToast("Please provide an accurate 10-digit account number configuration.", false); return; } closePortalModal('bankLockRulesPopup'); try { const userDocRef = doc(db, "users", activeUserSession.uid); await runTransaction(db, async (transaction) => { transaction.update(userDocRef, { bankName: bank, accountName: holder, accountNumber: num }); }); showToast("Payout profile successfully linked and saved."); } catch (ex) { showToast("An error occurred while locking your details. Please try again.", false); } });
 
-        document.getElementById('claimVoucherBtn').addEventListener('click', async () => { if (!activeUserSession || !localUserRecord) return; if (!localUserRecord.tierCode || localUserRecord.tierCode === 'NONE') { showToast("Voucher code redemption requires an active VIP plan level.", false); return; } const codeInput = document.getElementById('voucherCodeField').value.trim(); if (codeInput.length !== 5 || isNaN(codeInput)) { showToast("Voucher code must be exactly 5 numbers.", false); return; } if (codeInput === "79402") { const userDocRef = doc(db, "users", activeUserSession.uid); try { await runTransaction(db, async (transaction) => { const snap = await transaction.get(userDocRef); let bal = parseFloat(snap.data().balance || 0); transaction.update(userDocRef, { balance: bal + 250 }); }); await addDoc(collection(db, "ledger"), { uid: activeUserSession.uid, title: "Promo Voucher Credit Added", amount: 250, type: "credit", timestamp: serverTimestamp() }); showToast("Voucher bonus of ₦250 added successfully!"); closePortalModal('couponModalPopup'); document.getElementById('voucherCodeField').value = ""; } catch (e) { showToast("Error processing voucher application parameters.", false); } } else { showToast("Voucher code is invalid or missing.", false); } });
+        // ============ PROGRESSIVE SPLIT VOUCHER SYSTEM - NEW CODE ============
+        
+        // Load voucher redemption history
+        async function loadVoucherHistory() {
+            if (!activeUserSession) return;
+            
+            const historyQuery = query(
+                collection(db, "voucherRedemptions"),
+                where("userId", "==", activeUserSession.uid),
+                orderBy("timestamp", "desc"),
+                limit(5)
+            );
+            
+            const snapshot = await getDocs(historyQuery);
+            const historySection = document.getElementById('voucherHistorySection');
+            const historyList = document.getElementById('voucherHistoryList');
+            
+            if (snapshot.empty) {
+                historySection.style.display = 'none';
+                return;
+            }
+            
+            historySection.style.display = 'block';
+            historyList.innerHTML = '';
+            
+            snapshot.forEach(doc => {
+                const redemption = doc.data();
+                const date = redemption.timestamp?.toDate() || new Date();
+                const item = document.createElement('div');
+                item.className = 'voucher-history-item';
+                item.innerHTML = `
+                    <div>
+                        <div class="voucher-history-code">${redemption.voucherCode}</div>
+                        <div class="voucher-history-date">${date.toLocaleDateString()}</div>
+                    </div>
+                    <div class="voucher-history-amount">+₦${(redemption.amountClaimed || 0).toLocaleString()}</div>
+                `;
+                historyList.appendChild(item);
+            });
+        }
+
+        // Progressive split calculation function
+        function calculateProgressiveSplit(totalAmount, numPeople) {
+            const amounts = [];
+            let remaining = totalAmount;
+            
+            for (let i = 1; i <= numPeople; i++) {
+                let factor;
+                if (numPeople <= 10) {
+                    factor = (numPeople - i + 1) / ((numPeople * (numPeople + 1)) / 2);
+                } else {
+                    const decayRate = 0.85;
+                    const weights = [];
+                    let totalWeight = 0;
+                    for (let j = 1; j <= numPeople; j++) {
+                        const weight = Math.pow(decayRate, j - 1);
+                        weights.push(weight);
+                        totalWeight += weight;
+                    }
+                    factor = weights[i - 1] / totalWeight;
+                }
+                
+                let amount = totalAmount * factor;
+                amount = Math.round(amount * 100) / 100;
+                if (i === numPeople && amount < 0.01) amount = 0.01;
+                amounts.push(amount);
+                remaining -= amount;
+            }
+            
+            if (Math.abs(remaining) > 0.01) {
+                amounts[amounts.length - 1] += remaining;
+            }
+            
+            return amounts;
+        }
+
+        // Progressive voucher claim handler
+        async function claimProgressiveVoucher(code) {
+            if (!activeUserSession || !localUserRecord) {
+                showToast("Please login first", false);
+                return;
+            }
+            
+            // Check VIP requirement
+            if (!localUserRecord.tierCode || localUserRecord.tierCode === 'NONE') {
+                showToast("VIP 1+ membership required to claim vouchers!", false);
+                return;
+            }
+            
+            // Query the progressive voucher
+            const voucherQuery = query(collection(db, "progressiveVouchers"), where("code", "==", code));
+            const voucherSnapshot = await getDocs(voucherQuery);
+            
+            if (voucherSnapshot.empty) {
+                showToast("❌ Invalid voucher code. Please check and try again.", false);
+                return;
+            }
+            
+            const voucherDoc = voucherSnapshot.docs[0];
+            const voucher = voucherDoc.data();
+            
+            // Check if voucher is active
+            if (!voucher.isActive || voucher.isFullyClaimed) {
+                showToast("❌ This voucher has been fully claimed already!", false);
+                return;
+            }
+            
+            // Check expiry
+            if (voucher.expiry && voucher.expiry.toDate() < new Date()) {
+                showToast("❌ This voucher has expired!", false);
+                return;
+            }
+            
+            // Check if user already claimed this specific voucher
+            if (voucher.claimedBy && voucher.claimedBy.includes(activeUserSession.uid)) {
+                showToast("❌ You have already claimed this voucher!", false);
+                return;
+            }
+            
+            // Check global per-user limit
+            const userClaimsQuery = query(collection(db, "voucherRedemptions"), where("userId", "==", activeUserSession.uid));
+            const userClaimsSnap = await getDocs(userClaimsQuery);
+            const userTotalClaims = userClaimsSnap.size;
+            
+            if (voucher.maxPerUser && userTotalClaims >= voucher.maxPerUser) {
+                showToast(`❌ You have reached your global claim limit (${voucher.maxPerUser} vouchers)`, false);
+                return;
+            }
+            
+            // Get claim amount (progressively decreasing)
+            const currentIndex = voucher.currentClaimIndex || 0;
+            const claimAmount = voucher.splitAmounts[currentIndex];
+            
+            if (!claimAmount || claimAmount <= 0) {
+                showToast("❌ Voucher error - no remaining value", false);
+                return;
+            }
+            
+            // Process redemption
+            const userRef = doc(db, "users", activeUserSession.uid);
+            
+            try {
+                await runTransaction(db, async (transaction) => {
+                    // Get fresh voucher data
+                    const freshVoucher = await transaction.get(voucherDoc.ref);
+                    const freshData = freshVoucher.data();
+                    
+                    if (freshData.isFullyClaimed || freshData.remainingClaims <= 0) {
+                        throw new Error("Voucher fully claimed");
+                    }
+                    
+                    // Get user data
+                    const userSnap = await transaction.get(userRef);
+                    const currentBalance = parseFloat(userSnap.data().balance || 0);
+                    const currentEarnings = parseFloat(userSnap.data().totalEarnings || 0);
+                    
+                    // Add amount to user
+                    transaction.update(userRef, {
+                        balance: currentBalance + claimAmount,
+                        totalEarnings: currentEarnings + claimAmount
+                    });
+                    
+                    // Update voucher
+                    const newRemainingClaims = freshData.remainingClaims - 1;
+                    const newRemainingAmount = freshData.remainingAmount - claimAmount;
+                    const newClaimIndex = freshData.currentClaimIndex + 1;
+                    const newClaimedBy = [...(freshData.claimedBy || []), activeUserSession.uid];
+                    const newClaimedAmounts = [...(freshData.claimedAmounts || []), claimAmount];
+                    
+                    transaction.update(voucherDoc.ref, {
+                        remainingClaims: newRemainingClaims,
+                        remainingAmount: newRemainingAmount,
+                        currentClaimIndex: newClaimIndex,
+                        claimedBy: newClaimedBy,
+                        claimedAmounts: newClaimedAmounts,
+                        isFullyClaimed: newRemainingClaims === 0
+                    });
+                });
+                
+                // Record redemption
+                await addDoc(collection(db, "voucherRedemptions"), {
+                    voucherCode: code,
+                    userId: activeUserSession.uid,
+                    username: localUserRecord.username || "User",
+                    userTier: localUserRecord.tierCode,
+                    amountClaimed: claimAmount,
+                    claimNumber: voucher.currentClaimIndex + 1,
+                    totalClaims: voucher.totalPeople,
+                    timestamp: serverTimestamp()
+                });
+                
+                // Record in ledger
+                await addDoc(collection(db, "ledger"), {
+                    uid: activeUserSession.uid,
+                    title: `Voucher Claim: ${code}`,
+                    amount: claimAmount,
+                    type: "credit",
+                    timestamp: serverTimestamp(),
+                    claimPosition: voucher.currentClaimIndex + 1
+                });
+                
+                const remaining = voucher.remainingClaims - 1;
+                const position = voucher.currentClaimIndex + 1;
+                
+                Swal.fire({
+                    title: '🎉 Voucher Claimed!',
+                    html: `
+                        <div style="text-align: center;">
+                            <div style="font-size: 2rem; color: #10b981; margin-bottom: 10px;">+₦${claimAmount.toLocaleString()}</div>
+                            <div style="font-size: 0.8rem; color: #e5b842;">You were Claimant #${position} of ${voucher.totalPeople}</div>
+                            <div style="font-size: 0.7rem; color: #9ca3af; margin-top: 10px;">${remaining > 0 ? `${remaining} claims remaining on this voucher` : '🎊 Voucher fully claimed!'}</div>
+                        </div>
+                    `,
+                    icon: 'success',
+                    background: '#111424',
+                    color: '#fff',
+                    confirmButtonColor: '#e5b842',
+                    timer: 4000,
+                    timerProgressBar: true
+                });
+                
+                document.getElementById('voucherCodeField').value = '';
+                closePortalModal('couponModalPopup');
+                await loadVoucherHistory();
+                
+                // Refresh user data display
+                if (dbSnapshotUnsubscriber) {
+                    const userDocRef = doc(db, "users", activeUserSession.uid);
+                    const userSnap = await getDocs(userDocRef);
+                    if (userSnap.exists()) {
+                        renderTerminalMetrics(userSnap.data());
+                    }
+                }
+                
+            } catch (error) {
+                console.error("Voucher claim error:", error);
+                showToast(error.message || "Error processing voucher. Please try again.", false);
+            }
+        }
+
+        // Updated voucher claim button handler
+        document.getElementById('claimVoucherBtn').addEventListener('click', async () => {
+            if (!activeUserSession || !localUserRecord) return;
+            
+            const codeInput = document.getElementById('voucherCodeField').value.trim().toUpperCase();
+            if (!codeInput) {
+                showToast("Please enter a voucher code", false);
+                return;
+            }
+            
+            if (codeInput.length < 6 || codeInput.length > 8) {
+                showToast("Invalid voucher code format. Code should be 6-8 characters.", false);
+                return;
+            }
+            
+            await claimProgressiveVoucher(codeInput);
+        });
 
         document.getElementById('copyLinkBtn').addEventListener('click', () => { const textToCopy = document.getElementById('inviteLinkText').innerText; navigator.clipboard.writeText(textToCopy).then(() => { showToast("Referral tracking URL copied to clipboard!"); }); });
     </script>
