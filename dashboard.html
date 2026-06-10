@@ -157,6 +157,12 @@
         .stat-mini-card span { font-size: 0.6rem; color: #9ca3af; display: block; }
         .stat-mini-card strong { font-size: 0.9rem; color: #fff; display: block; margin-top: 4px; }
 
+        /* Pending Balance Card */
+        .pending-info-card { background: linear-gradient(135deg, #1e1a2e, #18152a); border-radius: 12px; padding: 12px 16px; margin-top: 8px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(245,158,11,0.3); }
+        .pending-info-card .label { font-size: 0.65rem; color: #f59e0b; display: flex; align-items: center; gap: 6px; }
+        .pending-info-card .value { font-weight: 800; color: #f59e0b; }
+        .pending-info-card small { font-size: 0.55rem; color: #9ca3af; }
+
         /* Voucher History Styles */
         .voucher-history-section { margin-top: 20px; background: #1b203a; border-radius: 16px; padding: 16px; border: 1px solid rgba(255,255,255,0.05); display: none; }
         .voucher-history-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; color: #e5b842; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
@@ -214,7 +220,7 @@
         </div>
     </div>
 
-    <!-- UPDATED VOUCHER MODAL - Progressive Split System -->
+    <!-- VOUCHER MODAL - Progressive Split System -->
     <div id="couponModalPopup" class="portal-modal-overlay">
         <div class="portal-modal-card">
             <i class="fa-solid fa-xmark portal-modal-close" onclick="closePortalModal('couponModalPopup')"></i>
@@ -243,12 +249,38 @@
 
             <div id="viewHome" class="app-view active-view">
                 <div class="wallet-hub-card">
-                    <div class="balance-block"><div class="balance-label"><i class="fa-solid fa-wallet"></i> Available Balance</div><div class="balance-amount" id="displayUserBalance">₦0.00</div></div>
-                    <div class="balance-sub-row"><div><div class="sub-balance-title">Total Earned</div><div class="sub-balance-val" id="displayTotalEarnings">₦0.00</div></div><div style="text-align: right;"><div class="sub-balance-title">VIP Level</div><div class="sub-balance-val" id="displayActiveRank" style="color: #e5b842;">STANDARD</div></div></div>
-                    <div class="hub-actions-grid"><a href="recharge.html" class="action-tile"><i class="fa-solid fa-circle-plus"></i><span>Deposit</span></a><div class="action-tile" onclick="window.location.href='withdraw.html'"><i class="fa-solid fa-money-bill-transfer"></i><span>Withdraw</span></div></div>
+                    <div class="balance-block">
+                        <div class="balance-label"><i class="fa-solid fa-wallet"></i> WITHDRAWABLE BALANCE</div>
+                        <div class="balance-amount" id="displayUserBalance">₦0.00</div>
+                        <small style="font-size: 0.6rem; color: #10b981;">💰 Available for withdrawal & upgrades</small>
+                    </div>
+                    <div class="balance-sub-row">
+                        <div>
+                            <div class="sub-balance-title">Total Earned (All Time)</div>
+                            <div class="sub-balance-val" id="displayTotalEarnings">₦0.00</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="sub-balance-title">VIP Level</div>
+                            <div class="sub-balance-val" id="displayActiveRank" style="color: #e5b842;">STANDARD</div>
+                        </div>
+                    </div>
+                    <!-- Pending Balance Info -->
+                    <div class="pending-info-card" id="pendingBalanceCard" style="display: none;">
+                        <div class="label"><i class="fa-solid fa-lock"></i> PENDING BALANCE (Frozen)</div>
+                        <div class="value" id="pendingBalanceDisplay">₦0.00</div>
+                        <small>🔒 ₦300 per referral who hasn't activated VIP yet</small>
+                    </div>
+                    <div class="hub-actions-grid">
+                        <a href="recharge.html" class="action-tile"><i class="fa-solid fa-circle-plus"></i><span>Deposit</span></a>
+                        <div class="action-tile" onclick="window.location.href='withdraw.html'"><i class="fa-solid fa-money-bill-transfer"></i><span>Withdraw</span></div>
+                    </div>
                 </div>
 
-                <div class="quick-stats"><div class="stat-mini-card"><i class="fa-solid fa-chart-line"></i><span>Daily ROI</span><strong>Up to 30%</strong></div><div class="stat-mini-card"><i class="fa-solid fa-calendar-week"></i><span>Contract Days</span><strong>50 Days</strong></div><div class="stat-mini-card"><i class="fa-solid fa-users"></i><span>Active Investors</span><strong>10K+</strong></div></div>
+                <div class="quick-stats">
+                    <div class="stat-mini-card"><i class="fa-solid fa-chart-line"></i><span>Daily ROI</span><strong>Up to 30%</strong></div>
+                    <div class="stat-mini-card"><i class="fa-solid fa-calendar-week"></i><span>Contract Days</span><strong>50 Days</strong></div>
+                    <div class="stat-mini-card"><i class="fa-solid fa-users"></i><span>Active Investors</span><strong>10K+</strong></div>
+                </div>
 
                 <h2 class="section-headline"><i class="fa-solid fa-crown"></i> Investment Plans</h2>
                 <p class="section-subline">Choose your plan and start earning daily returns for 50 days</p>
@@ -274,17 +306,12 @@
                 <!-- VIP 7: 48000+350=48350 daily -->
                 <div class="package-card"><div class="discount-tag">₦10,000 DISCOUNT</div><div class="package-header" style="margin-top: 8px;"><span class="package-title-text"><i class="fa-solid fa-rocket"></i> VIP 7: APEX</span><span class="package-price">₦263,000 <del style="font-size:0.75rem; color:#9ca3af; margin-left:4px;">₦273,000</del></span></div><div class="package-details"><div class="detail-item"><i class="fa-solid fa-calendar-days"></i> Project Plan: 50 Days</div><div class="detail-item"><i class="fa-solid fa-money-bill-wave"></i> Daily Earnings: ₦48,350 <span class="bonus-badge">+₦350 Bonus</span></div><div class="detail-item"><i class="fa-solid fa-chart-line"></i> Total Income: ₦2,417,500</div></div><button class="btn-buy-package upgrade-btn" data-tier="VIP7" data-name="VIP 7: APEX" data-cost="263000" data-yield="48350">Activate Plan</button></div>
 
-                <!-- VIP 8-13 Coming Soon -->
+                <!-- VIP 8-13 Coming Soon (same structure, kept intact) -->
                 <div class="package-card" style="border: 1px solid #e5b842; opacity: 0.85;"><div class="discount-tag" style="background:#10b981;">₦20,000 SPECIAL DISCOUNT</div><div class="package-header" style="margin-top: 8px;"><span class="package-title-text" style="color:#e5b842;"><i class="fa-solid fa-infinity"></i> VIP 8: INFINITY</span><span class="package-price">₦503,000 <del style="font-size:0.75rem; color:#9ca3af; margin-left:4px;">₦523,000</del></span></div><div class="package-details"><div class="detail-item"><i class="fa-solid fa-calendar-days"></i> Project Plan: 50 Days</div><div class="detail-item"><i class="fa-solid fa-money-bill-wave"></i> Daily Earnings: ₦105,350 <span class="bonus-badge" style="background:rgba(229,184,66,0.15); color:#e5b842;">+₦350 Bonus</span></div><div class="detail-item"><i class="fa-solid fa-chart-line"></i> Total Income: ₦5,267,500</div></div><button class="btn-buy-package" style="background: #4b5563; color: #d1d5db;" onclick="openPortalModal('comingSoonPopup')">Coming Soon</button></div>
-
                 <div class="package-card" style="border: 1px solid #3b82f6; opacity: 0.85;"><div class="discount-tag" style="background:#3b82f6;">₦30,000 MILESTONE BONUS</div><div class="package-header" style="margin-top: 8px;"><span class="package-title-text" style="color:#3b82f6;"><i class="fa-solid fa-chart-simple"></i> VIP 9: OMEGA ALPHA</span><span class="package-price">₦850,000 <del style="font-size:0.75rem; color:#9ca3af; margin-left:4px;">₦880,000</del></span></div><div class="package-details"><div class="detail-item"><i class="fa-solid fa-calendar-days"></i> Project Plan: 50 Days</div><div class="detail-item"><i class="fa-solid fa-money-bill-wave"></i> Daily Earnings: ₦195,350 <span class="bonus-badge" style="background:rgba(59,130,246,0.15); color:#3b82f6;">+₦350 Bonus</span></div><div class="detail-item"><i class="fa-solid fa-chart-line"></i> Total Income: ₦9,767,500</div></div><button class="btn-buy-package" style="background: #4b5563; color: #d1d5db;" onclick="openPortalModal('comingSoonPopup')">Coming Soon</button></div>
-
                 <div class="package-card" style="border: 1px solid #a855f7; opacity: 0.85;"><div class="discount-tag" style="background:#a855f7;">₦50,000 INCOME BONUS</div><div class="package-header" style="margin-top: 8px;"><span class="package-title-text" style="color:#a855f7;"><i class="fa-solid fa-atom"></i> VIP 10: QUANTUM SUPREME</span><span class="package-price">₦1,450,000 <del style="font-size:0.75rem; color:#9ca3af; margin-left:4px;">₦1,500,000</del></span></div><div class="package-details"><div class="detail-item"><i class="fa-solid fa-calendar-days"></i> Project Plan: 50 Days</div><div class="detail-item"><i class="fa-solid fa-money-bill-wave"></i> Daily Earnings: ₦360,350 <span class="bonus-badge" style="background:rgba(168,85,247,0.15); color:#a855f7;">+₦350 Bonus</span></div><div class="detail-item"><i class="fa-solid fa-chart-line"></i> Total Income: ₦18,017,500</div></div><button class="btn-buy-package" style="background: #4b5563; color: #d1d5db;" onclick="openPortalModal('comingSoonPopup')">Coming Soon</button></div>
-
                 <div class="package-card" style="border: 2px solid #ec4899; opacity: 0.85;"><div class="discount-tag" style="background:#ec4899;">₦100,000 CROWN SPECIAL DISCOUNT</div><div class="package-header" style="margin-top: 8px;"><span class="package-title-text" style="color:#ec4899;"><i class="fa-solid fa-king"></i> VIP 11: NEXUS META KING</span><span class="package-price">₦2,900,000 <del style="font-size:0.75rem; color:#9ca3af; margin-left:4px;">₦3,000,000</del></span></div><div class="package-details"><div class="detail-item"><i class="fa-solid fa-calendar-days"></i> Project Plan: 50 Days</div><div class="detail-item"><i class="fa-solid fa-money-bill-wave"></i> Daily Earnings: ₦780,350 <span class="bonus-badge" style="background:rgba(236,72,153,0.15); color:#ec4899;">+₦350 Bonus</span></div><div class="detail-item"><i class="fa-solid fa-chart-line"></i> Total Income: ₦39,017,500</div></div><button class="btn-buy-package" style="background: #4b5563; color: #d1d5db;" onclick="openPortalModal('comingSoonPopup')">Coming Soon</button></div>
-
                 <div class="package-card" style="border: 2px solid #06b6d4; opacity: 0.85;"><div class="discount-tag" style="background:#06b6d4;">₦150,000 ELITE MILESTONE BONUS</div><div class="package-header" style="margin-top: 8px;"><span class="package-title-text" style="color:#06b6d4;"><i class="fa-solid fa-globe"></i> VIP 12: COSMIC OVERLORD</span><span class="package-price">₦4,350,000 <del style="font-size:0.75rem; color:#9ca3af; margin-left:4px;">₦4,500,000</del></span></div><div class="package-details"><div class="detail-item"><i class="fa-solid fa-calendar-days"></i> Project Plan: 50 Days</div><div class="detail-item"><i class="fa-solid fa-money-bill-wave"></i> Daily Earnings: ₦1,220,350 <span class="bonus-badge" style="background:rgba(6,182,212,0.15); color:#06b6d4;">+₦350 Bonus</span></div><div class="detail-item"><i class="fa-solid fa-chart-line"></i> Total Income: ₦61,017,500</div></div><button class="btn-buy-package" style="background: #4b5563; color: #d1d5db;" onclick="openPortalModal('comingSoonPopup')">Coming Soon</button></div>
-
                 <div class="package-card" style="border: 2px solid #f97316; opacity: 0.85;"><div class="discount-tag" style="background:#f97316;">₦250,000 MAXIMUM LIQUIDITY YIELD</div><div class="package-header" style="margin-top: 8px;"><span class="package-title-text" style="color:#f97316;"><i class="fa-solid fa-meteor"></i> VIP 13: SINGULARITY CORE</span><span class="package-price">₦6,750,000 <del style="font-size:0.75rem; color:#9ca3af; margin-left:4px;">₦7,000,000</del></span></div><div class="package-details"><div class="detail-item"><i class="fa-solid fa-calendar-days"></i> Project Plan: 50 Days</div><div class="detail-item"><i class="fa-solid fa-money-bill-wave"></i> Daily Earnings: ₦2,025,350 <span class="bonus-badge" style="background:rgba(249,115,22,0.15); color:#f97316;">+₦350 Bonus</span></div><div class="detail-item"><i class="fa-solid fa-chart-line"></i> Total Income: ₦101,267,500</div></div><button class="btn-buy-package" style="background: #4b5563; color: #d1d5db;" onclick="openPortalModal('comingSoonPopup')">Coming Soon</button></div>
             </div>
 
@@ -383,6 +410,7 @@
         const db = getFirestore(app);
 
         let activeUserSession = null, localUserRecord = null, dbSnapshotUnsubscriber = null;
+        let withdrawableBalance = 0, pendingBalance = 0, totalEarningsRaw = 0;
 
         window.logout = async function() {
             const result = await Swal.fire({ title: '⚠️ Confirm Logout', text: 'Are you sure you want to logout from NEXUS EARN?', icon: 'question', background: '#111424', color: '#fff', confirmButtonColor: '#ef4444', cancelButtonColor: '#e5b842', confirmButtonText: 'Yes, Logout', cancelButtonText: 'Cancel', showCancelButton: true, backdrop: 'rgba(0,0,0,0.8)' });
@@ -394,9 +422,7 @@
         window.openPortalModal = function(id) { document.getElementById(id).style.display = 'flex'; };
         window.closePortalModal = function(id) { document.getElementById(id).style.display = 'none'; };
 
-        onAuthStateChanged(auth, (user) => { if (user) { activeUserSession = user; if (dbSnapshotUnsubscriber) dbSnapshotUnsubscriber(); dbSnapshotUnsubscriber = onSnapshot(doc(db, "users", user.uid), (snapshot) => { if (snapshot.exists()) { localUserRecord = snapshot.data(); renderTerminalMetrics(localUserRecord); loadTeamBreakdownNetwork(user.uid, localUserRecord.referralCode); loadVoucherHistory(); } else { window.location.href = "login.html"; } }); } else { window.location.href = "login.html"; } });
-
-        // Helper: get numeric tier index for comparison (higher number = better plan)
+        // Helper: get numeric tier index for comparison
         function getTierValue(tierCode) {
             if (tierCode === 'VIP1') return 1;
             if (tierCode === 'VIP2') return 2;
@@ -405,13 +431,97 @@
             if (tierCode === 'VIP5') return 5;
             if (tierCode === 'VIP6') return 6;
             if (tierCode === 'VIP7') return 7;
-            return 0; // NONE or unknown
+            return 0;
         }
 
+        // Calculate plan cost from tier
+        function getPlanCost(tierCode) {
+            switch(tierCode) {
+                case 'VIP1': return 7000;
+                case 'VIP2': return 11000;
+                case 'VIP3': return 19000;
+                case 'VIP4': return 37000;
+                case 'VIP5': return 71000;
+                case 'VIP6': return 138000;
+                case 'VIP7': return 263000;
+                default: return 0;
+            }
+        }
+
+        // Calculate withdrawable and pending balances
+        async function calculateBalances(userId) {
+            try {
+                const userDoc = await getDoc(doc(db, "users", userId));
+                if (!userDoc.exists()) return;
+                const user = userDoc.data();
+                totalEarningsRaw = user.totalEarnings || 0;
+                
+                // Get referred users
+                const referredQuery = query(collection(db, "users"), where("referredBy", "==", userId));
+                const referredSnap = await getDocs(referredQuery);
+                
+                let frozenReferral300 = 0;
+                let unlockedReferral300 = 0;
+                let commissionFromActivated = 0;
+                
+                for (const refDoc of referredSnap.docs) {
+                    const refUser = refDoc.data();
+                    const refTier = refUser.tierCode || 'NONE';
+                    
+                    if (refTier !== 'NONE') {
+                        unlockedReferral300 += 300;
+                        const planCost = getPlanCost(refTier);
+                        commissionFromActivated += planCost * 0.10;
+                    } else {
+                        frozenReferral300 += 300;
+                    }
+                }
+                
+                // WITHDRAWABLE BALANCE = totalEarnings + commissionFromActivated
+                withdrawableBalance = totalEarningsRaw + commissionFromActivated;
+                pendingBalance = frozenReferral300;
+                
+                document.getElementById('displayUserBalance').innerText = "₦" + withdrawableBalance.toLocaleString('en-US', { minimumFractionDigits: 2 });
+                document.getElementById('displayTotalEarnings').innerText = "₦" + totalEarningsRaw.toLocaleString('en-US', { minimumFractionDigits: 2 });
+                
+                const pendingCard = document.getElementById('pendingBalanceCard');
+                const pendingDisplay = document.getElementById('pendingBalanceDisplay');
+                if (pendingBalance > 0) {
+                    pendingCard.style.display = 'flex';
+                    pendingDisplay.innerText = "₦" + pendingBalance.toLocaleString('en-US', { minimumFractionDigits: 2 });
+                } else {
+                    pendingCard.style.display = 'none';
+                }
+                
+                return { withdrawableBalance, pendingBalance, totalEarnings: totalEarningsRaw };
+            } catch (error) {
+                console.error("Balance calculation error:", error);
+                return { withdrawableBalance: 0, pendingBalance: 0, totalEarnings: 0 };
+            }
+        }
+
+        onAuthStateChanged(auth, async (user) => { 
+            if (user) { 
+                activeUserSession = user; 
+                if (dbSnapshotUnsubscriber) dbSnapshotUnsubscriber(); 
+                dbSnapshotUnsubscriber = onSnapshot(doc(db, "users", user.uid), async (snapshot) => { 
+                    if (snapshot.exists()) { 
+                        localUserRecord = snapshot.data(); 
+                        await calculateBalances(user.uid);
+                        renderTerminalMetrics(localUserRecord); 
+                        loadTeamBreakdownNetwork(user.uid, localUserRecord.referralCode); 
+                        loadVoucherHistory(); 
+                    } else { 
+                        window.location.href = "login.html"; 
+                    } 
+                }); 
+            } else { 
+                window.location.href = "login.html"; 
+            } 
+        });
+
         function renderTerminalMetrics(data) {
-            const currentBal = parseFloat(data.balance || 0), totalEarned = parseFloat(data.totalEarnings || 0), userTier = data.tierCode || 'NONE';
-            document.getElementById('displayUserBalance').innerText = "₦" + currentBal.toLocaleString('en-US', { minimumFractionDigits: 2 });
-            document.getElementById('displayTotalEarnings').innerText = "₦" + totalEarned.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            const userTier = data.tierCode || 'NONE';
             document.getElementById('displayActiveRank').innerText = userTier === 'NONE' ? 'STANDARD MEMBER' : userTier;
             document.getElementById('profileUsernameDisplay').innerText = data.username || "Investor";
             document.getElementById('profileRankLabel').innerText = userTier === 'NONE' ? 'STANDARD MEMBER' : 'VIP TIER: ' + userTier;
@@ -480,7 +590,7 @@
             onSnapshot(teamQuery, (snapshot) => { if (snapshot.empty) { targetContainer.innerHTML = `<p style="font-size: 0.75rem; color: #9ca3af; text-align: center; padding: 10px;">No downline network links registered under this connection node.</p>`; return; } targetContainer.innerHTML = ""; snapshot.forEach((docSnapshot) => { const member = docSnapshot.data(); const row = document.createElement('div'); row.className = "user-breakdown-row"; const isRegistered = member.username ? true : false; const displayName = isRegistered ? member.username : "Anonymous Invitee"; const activeTier = member.tierCode && member.tierCode !== 'NONE' ? member.tierCode : null; const depositValue = parseFloat(member.totalDepositedAmount || 0); let badgeLayoutHtml = ``; if (isRegistered) { badgeLayoutHtml += `<span class="status-badge registered">Registered</span>`; } else { badgeLayoutHtml += `<span class="status-badge unregistered">Unregistered</span>`; } if (activeTier) { badgeLayoutHtml += `<span class="status-badge vip-tag">${activeTier}</span>`; } else { badgeLayoutHtml += `<span class="status-badge not-activated">Not Activated</span>`; } row.innerHTML = `<div class="user-meta-info"><div class="user-display-name">${displayName}</div><div class="badge-holder">${badgeLayoutHtml}</div></div><div class="user-financial-contribution"><span>Deposited</span>₦${depositValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>`; targetContainer.appendChild(row); }); });
         }
 
-        // UPGRADE / ACTIVATION LOGIC – allows upgrading to a higher VIP only, never downgrade
+        // UPGRADE LOGIC - Uses WITHDRAWABLE BALANCE (not pending balance)
         async function runProductActivationCycle(packageName, packageCost, dailyYield, tierCode) {
             if (!activeUserSession || !localUserRecord) return;
             const userDocRef = doc(db, "users", activeUserSession.uid);
@@ -494,19 +604,25 @@
                 return;
             }
             
+            // Check if withdrawable balance is sufficient
+            if (withdrawableBalance < packageCost) {
+                showToast(`Insufficient withdrawable balance! You need ₦${packageCost.toLocaleString()}. Pending balance (₦${pendingBalance.toLocaleString()}) cannot be used for upgrades.`, false);
+                return;
+            }
+            
             try {
                 let transactionSuccess = false;
                 await runTransaction(db, async (transaction) => {
                     const userSnapshot = await transaction.get(userDocRef);
                     if (!userSnapshot.exists()) throw new Error("Database pointer reference dropped.");
 
-                    let walletBalance = parseFloat(userSnapshot.data().balance || 0);
-                    if (walletBalance < packageCost) throw new Error("INSUFFICIENT_FUNDS");
+                    let currentTotalEarnings = parseFloat(userSnapshot.data().totalEarnings || 0);
+                    if (currentTotalEarnings < packageCost) throw new Error("INSUFFICIENT_FUNDS");
 
-                    let finalCalculatedBalance = walletBalance - packageCost;
+                    let finalCalculatedEarnings = currentTotalEarnings - packageCost;
                     
                     transaction.update(userDocRef, {
-                        balance: finalCalculatedBalance,
+                        totalEarnings: finalCalculatedEarnings,
                         tierCode: tierCode,
                         contractDaysRemaining: 50,
                         activeDailyYield: dailyYield,
@@ -524,15 +640,14 @@
                         timestamp: serverTimestamp()
                     });
                     showToast(packageName + " Plan Successfully Activated!");
+                    await calculateBalances(activeUserSession.uid);
                     if (localUserRecord.referredBy) {
                         triggerNetworkReferralReward(localUserRecord.referredBy, packageCost);
                     }
                 }
             } catch (err) {
                 if (err.message === "INSUFFICIENT_FUNDS") {
-                    showToast("Insufficient account funds to activate this investment plan.", false);
-                } else if (err.message === "ACTIVE_PLAN_EXISTS") {
-                    showToast("You already have an active capital contract layout.", false);
+                    showToast("Insufficient withdrawable funds to activate this investment plan.", false);
                 } else {
                     showToast("Network response fault error. Connection dropped.", false);
                 }
@@ -540,7 +655,6 @@
             }
         }
 
-        // Attach upgrade handlers to all plan buttons (excluding "Coming Soon" ones)
         document.querySelectorAll('.btn-buy-package[data-tier]').forEach(button => {
             button.addEventListener('click', function() {
                 const name = this.getAttribute('data-name');
@@ -551,7 +665,7 @@
             });
         });
 
-        window.executeProfileAttendanceCheckIn = async function() { if (!activeUserSession || !localUserRecord) return; if (!localUserRecord.tierCode || localUserRecord.tierCode === 'NONE') { showToast("Daily attendance rewards require an active plan level.", false); return; } const todayStr = new Date().toISOString().split('T')[0]; if (localUserRecord.lastAttendanceClaimDate === todayStr) { showToast("Attendance bonus already processed for today.", false); return; } const userDocRef = doc(db, "users", activeUserSession.uid); try { await runTransaction(db, async (transaction) => { const snap = await transaction.get(userDocRef); let bal = parseFloat(snap.data().balance || 0); transaction.update(userDocRef, { balance: bal + 50, lastAttendanceClaimDate: todayStr }); }); await addDoc(collection(db, "ledger"), { uid: activeUserSession.uid, title: "Daily Attendance Checked-In", amount: 50, type: "credit", timestamp: serverTimestamp() }); showToast("Verified! ₦50 credited directly to your balance."); } catch (ex) { showToast("Operational processing fault. Try reloading workspace.", false); } };
+        window.executeProfileAttendanceCheckIn = async function() { if (!activeUserSession || !localUserRecord) return; if (!localUserRecord.tierCode || localUserRecord.tierCode === 'NONE') { showToast("Daily attendance rewards require an active plan level.", false); return; } const todayStr = new Date().toISOString().split('T')[0]; if (localUserRecord.lastAttendanceClaimDate === todayStr) { showToast("Attendance bonus already processed for today.", false); return; } const userDocRef = doc(db, "users", activeUserSession.uid); try { await runTransaction(db, async (transaction) => { const snap = await transaction.get(userDocRef); let currentEarnings = parseFloat(snap.data().totalEarnings || 0); transaction.update(userDocRef, { totalEarnings: currentEarnings + 50, lastAttendanceClaimDate: todayStr }); }); await addDoc(collection(db, "ledger"), { uid: activeUserSession.uid, title: "Daily Attendance Checked-In", amount: 50, type: "credit", timestamp: serverTimestamp() }); showToast("Verified! ₦50 credited to your withdrawable balance."); await calculateBalances(activeUserSession.uid); } catch (ex) { showToast("Operational processing fault. Try reloading workspace.", false); } };
 
         window.executeDailyMiningCycle = async function() {
             if (!activeUserSession || !localUserRecord) return;
@@ -571,16 +685,14 @@
             try {
                 await runTransaction(db, async (transaction) => {
                     const snap = await transaction.get(userDocRef);
-                    let bal = parseFloat(snap.data().balance || 0);
-                    let totalEarned = parseFloat(snap.data().totalEarnings || 0);
+                    let currentEarnings = parseFloat(snap.data().totalEarnings || 0);
                     let remaining = parseInt(snap.data().contractDaysRemaining || 0);
                     
                     let newRemaining = remaining - 1;
                     if (newRemaining < 0) newRemaining = 0;
                     
                     transaction.update(userDocRef, {
-                        balance: bal + activeYield,
-                        totalEarnings: totalEarned + activeYield,
+                        totalEarnings: currentEarnings + activeYield,
                         lastMiningClaimDate: todayStr,
                         contractDaysRemaining: newRemaining
                     });
@@ -592,23 +704,22 @@
                     type: "credit",
                     timestamp: serverTimestamp()
                 });
-                showToast("Success! ₦" + activeYield.toLocaleString() + " added to your balance.");
+                showToast("Success! ₦" + activeYield.toLocaleString() + " added to your withdrawable balance.");
+                await calculateBalances(activeUserSession.uid);
             } catch (ex) {
                 showToast("Database synchronization issue. Try checking connection parameters.", false);
             }
         };
         document.getElementById('universalTaskBox').addEventListener('click', executeDailyMiningCycle);
 
-        async function triggerNetworkReferralReward(referrerUID, purchasedPlanCost) { if (!referrerUID || referrerUID.trim() === "") return; const referrerDocRef = doc(db, "users", referrerUID); try { await runTransaction(db, async (transaction) => { const referrerSnap = await transaction.get(referrerDocRef); if (!referrerSnap.exists()) return; let currentReferrerBal = parseFloat(referrerSnap.data().balance || 0); let currentBonusEarned = parseFloat(referrerSnap.data().referralBonusEarned || 0); let directInvitesCount = parseInt(referrerSnap.data().directInvitesCount || 0); let oldTeamDepositTotal = parseFloat(referrerSnap.data().teamDepositTotal || 0); let teamCapitalVolume = parseFloat(referrerSnap.data().teamCapitalVolume || 0); let newTeamDepositTotal = oldTeamDepositTotal + purchasedPlanCost; let calculatedCommission = purchasedPlanCost * 0.10; let finalPayoutSum = calculatedCommission; let trackingMessage = "10% Direct Plan Referral Commission"; if (directInvitesCount === 0) { finalPayoutSum += 300; trackingMessage = "First Referral Bonus Payload (+₦300 Stacked)"; } let extraMilestoneBonusSum = 0; if (oldTeamDepositTotal < 100000 && newTeamDepositTotal >= 100000) { extraMilestoneBonusSum += 5000; addDoc(collection(db, "ledger"), { uid: referrerUID, title: "Reached 100K Deposit Milestone Bonus", amount: 5000, type: "credit", timestamp: serverTimestamp() }); } if (oldTeamDepositTotal < 200000 && newTeamDepositTotal >= 200000) { extraMilestoneBonusSum += 10000; addDoc(collection(db, "ledger"), { uid: referrerUID, title: "Reached 200K Deposit Milestone Bonus", amount: 10000, type: "credit", timestamp: serverTimestamp() }); } if (oldTeamDepositTotal < 300000 && newTeamDepositTotal >= 300000) { extraMilestoneBonusSum += 15000; addDoc(collection(db, "ledger"), { uid: referrerUID, title: "Reached 300K Deposit Milestone Bonus", amount: 15000, type: "credit", timestamp: serverTimestamp() }); } finalPayoutSum += extraMilestoneBonusSum; transaction.update(referrerDocRef, { balance: currentReferrerBal + finalPayoutSum, referralBonusEarned: currentBonusEarned + finalPayoutSum, directInvitesCount: directInvitesCount + 1, teamDepositTotal: newTeamDepositTotal, teamCapitalVolume: teamCapitalVolume + purchasedPlanCost }); addDoc(collection(db, "ledger"), { uid: referrerUID, title: trackingMessage, amount: calculatedCommission + (directInvitesCount === 0 ? 300 : 0), type: "credit", timestamp: serverTimestamp() }); }); } catch (err) { console.error("Referral error:", err); } }
+        async function triggerNetworkReferralReward(referrerUID, purchasedPlanCost) { if (!referrerUID || referrerUID.trim() === "") return; const referrerDocRef = doc(db, "users", referrerUID); try { await runTransaction(db, async (transaction) => { const referrerSnap = await transaction.get(referrerDocRef); if (!referrerSnap.exists()) return; let currentEarnings = parseFloat(referrerSnap.data().totalEarnings || 0); let currentBonusEarned = parseFloat(referrerSnap.data().referralBonusEarned || 0); let directInvitesCount = parseInt(referrerSnap.data().directInvitesCount || 0); let oldTeamDepositTotal = parseFloat(referrerSnap.data().teamDepositTotal || 0); let teamCapitalVolume = parseFloat(referrerSnap.data().teamCapitalVolume || 0); let newTeamDepositTotal = oldTeamDepositTotal + purchasedPlanCost; let calculatedCommission = purchasedPlanCost * 0.10; let finalPayoutSum = calculatedCommission; let trackingMessage = "10% Direct Plan Referral Commission"; if (directInvitesCount === 0) { finalPayoutSum += 300; trackingMessage = "First Referral Bonus Payload (+₦300 Stacked)"; } let extraMilestoneBonusSum = 0; if (oldTeamDepositTotal < 100000 && newTeamDepositTotal >= 100000) { extraMilestoneBonusSum += 5000; addDoc(collection(db, "ledger"), { uid: referrerUID, title: "Reached 100K Deposit Milestone Bonus", amount: 5000, type: "credit", timestamp: serverTimestamp() }); } if (oldTeamDepositTotal < 200000 && newTeamDepositTotal >= 200000) { extraMilestoneBonusSum += 10000; addDoc(collection(db, "ledger"), { uid: referrerUID, title: "Reached 200K Deposit Milestone Bonus", amount: 10000, type: "credit", timestamp: serverTimestamp() }); } if (oldTeamDepositTotal < 300000 && newTeamDepositTotal >= 300000) { extraMilestoneBonusSum += 15000; addDoc(collection(db, "ledger"), { uid: referrerUID, title: "Reached 300K Deposit Milestone Bonus", amount: 15000, type: "credit", timestamp: serverTimestamp() }); } finalPayoutSum += extraMilestoneBonusSum; transaction.update(referrerDocRef, { totalEarnings: currentEarnings + finalPayoutSum, referralBonusEarned: currentBonusEarned + finalPayoutSum, directInvitesCount: directInvitesCount + 1, teamDepositTotal: newTeamDepositTotal, teamCapitalVolume: teamCapitalVolume + purchasedPlanCost }); addDoc(collection(db, "ledger"), { uid: referrerUID, title: trackingMessage, amount: calculatedCommission + (directInvitesCount === 0 ? 300 : 0), type: "credit", timestamp: serverTimestamp() }); }); } catch (err) { console.error("Referral error:", err); } }
 
         document.getElementById('saveBankBtn').addEventListener('click', async () => { if (!activeUserSession) return; const bank = document.getElementById('inputBankName').value; const holder = document.getElementById('inputBankHolderName').value.trim(); const num = document.getElementById('inputBankNumber').value.trim(); if (!bank || holder === "" || num.length !== 10) { closePortalModal('bankLockRulesPopup'); showToast("Please provide an accurate 10-digit account number configuration.", false); return; } closePortalModal('bankLockRulesPopup'); try { const userDocRef = doc(db, "users", activeUserSession.uid); await runTransaction(db, async (transaction) => { transaction.update(userDocRef, { bankName: bank, accountName: holder, accountNumber: num }); }); showToast("Payout profile successfully linked and saved."); } catch (ex) { showToast("An error occurred while locking your details. Please try again.", false); } });
 
         // ============ PROGRESSIVE VOUCHER SYSTEM ============
         
-        // Load voucher redemption history
         async function loadVoucherHistory() {
             if (!activeUserSession) return;
-            
             try {
                 const historyQuery = query(
                     collection(db, "voucherRedemptions"),
@@ -616,259 +727,101 @@
                     orderBy("timestamp", "desc"),
                     limit(5)
                 );
-                
                 const snapshot = await getDocs(historyQuery);
                 const historySection = document.getElementById('voucherHistorySection');
                 const historyList = document.getElementById('voucherHistoryList');
-                
                 if (!historySection) return;
-                
                 if (snapshot.empty) {
                     historySection.style.display = 'none';
                     return;
                 }
-                
                 historySection.style.display = 'block';
                 historyList.innerHTML = '';
-                
                 snapshot.forEach(doc => {
                     const redemption = doc.data();
                     const date = redemption.timestamp?.toDate() || new Date();
                     const item = document.createElement('div');
                     item.className = 'voucher-history-item';
-                    item.innerHTML = `
-                        <div>
-                            <div class="voucher-history-code">${redemption.voucherCode}</div>
-                            <div class="voucher-history-date">${date.toLocaleDateString()}</div>
-                        </div>
-                        <div class="voucher-history-amount">+₦${(redemption.amountClaimed || 0).toLocaleString()}</div>
-                    `;
+                    item.innerHTML = `<div><div class="voucher-history-code">${redemption.voucherCode}</div><div class="voucher-history-date">${date.toLocaleDateString()}</div></div><div class="voucher-history-amount">+₦${(redemption.amountClaimed || 0).toLocaleString()}</div>`;
                     historyList.appendChild(item);
                 });
-            } catch (e) {
-                console.log("History load error:", e);
-            }
+            } catch (e) { console.log("History load error:", e); }
         }
 
-        // Progressive split calculation (roughly equal - fair distribution)
         function calculateRoughlyEqualSplit(totalAmount, numPeople) {
             const amounts = [];
             const baseAmount = totalAmount / numPeople;
             let remaining = totalAmount;
-            
             for (let i = 0; i < numPeople; i++) {
-                let variation = 1 - (i * 0.01); // Only 1% difference between each person
+                let variation = 1 - (i * 0.01);
                 let amount = baseAmount * variation;
                 amount = Math.round(amount * 100) / 100;
-                
-                if (i === numPeople - 1) {
-                    amount = remaining;
-                } else {
-                    remaining -= amount;
-                }
-                
+                if (i === numPeople - 1) { amount = remaining; } else { remaining -= amount; }
                 if (amount < 1) amount = 1;
                 amounts.push(amount);
             }
-            
             const finalSum = amounts.reduce((a, b) => a + b, 0);
-            if (Math.abs(finalSum - totalAmount) > 0.01) {
-                amounts[amounts.length - 1] += (totalAmount - finalSum);
-            }
-            
+            if (Math.abs(finalSum - totalAmount) > 0.01) { amounts[amounts.length - 1] += (totalAmount - finalSum); }
             return amounts;
         }
 
-        // Progressive voucher claim handler
         async function claimProgressiveVoucher(code) {
-            if (!activeUserSession || !localUserRecord) {
-                showToast("Please login first", false);
-                return;
-            }
-            
-            if (!localUserRecord.tierCode || localUserRecord.tierCode === 'NONE') {
-                showToast("VIP 1+ membership required to claim vouchers!", false);
-                return;
-            }
-            
+            if (!activeUserSession || !localUserRecord) { showToast("Please login first", false); return; }
+            if (!localUserRecord.tierCode || localUserRecord.tierCode === 'NONE') { showToast("VIP 1+ membership required to claim vouchers!", false); return; }
             const claimBtn = document.getElementById('claimVoucherBtn');
             const originalText = claimBtn.innerHTML;
             claimBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
             claimBtn.disabled = true;
-            
             try {
                 const voucherQuery = query(collection(db, "progressiveVouchers"), where("code", "==", code));
                 const voucherSnapshot = await getDocs(voucherQuery);
-                
-                if (voucherSnapshot.empty) {
-                    showToast("❌ Invalid voucher code. Please check and try again.", false);
-                    claimBtn.innerHTML = originalText;
-                    claimBtn.disabled = false;
-                    return;
-                }
-                
+                if (voucherSnapshot.empty) { showToast("❌ Invalid voucher code.", false); claimBtn.innerHTML = originalText; claimBtn.disabled = false; return; }
                 const voucherDoc = voucherSnapshot.docs[0];
                 const voucher = voucherDoc.data();
-                
-                if (!voucher.isActive || voucher.isFullyClaimed) {
-                    showToast("❌ This voucher has been fully claimed already!", false);
-                    claimBtn.innerHTML = originalText;
-                    claimBtn.disabled = false;
-                    return;
-                }
-                
-                if (voucher.expiry && voucher.expiry.toDate() < new Date()) {
-                    showToast("❌ This voucher has expired!", false);
-                    claimBtn.innerHTML = originalText;
-                    claimBtn.disabled = false;
-                    return;
-                }
-                
-                if (voucher.claimedBy && voucher.claimedBy.includes(activeUserSession.uid)) {
-                    showToast("❌ You have already claimed this voucher!", false);
-                    claimBtn.innerHTML = originalText;
-                    claimBtn.disabled = false;
-                    return;
-                }
-                
-                const userClaimsQuery = query(collection(db, "voucherRedemptions"), where("userId", "==", activeUserSession.uid));
-                const userClaimsSnap = await getDocs(userClaimsQuery);
-                const userTotalClaims = userClaimsSnap.size;
-                
-                if (voucher.maxPerUser && userTotalClaims >= voucher.maxPerUser) {
-                    showToast(`❌ You have reached your global claim limit (${voucher.maxPerUser} vouchers)`, false);
-                    claimBtn.innerHTML = originalText;
-                    claimBtn.disabled = false;
-                    return;
-                }
-                
+                if (!voucher.isActive || voucher.isFullyClaimed) { showToast("❌ This voucher has been fully claimed!", false); claimBtn.innerHTML = originalText; claimBtn.disabled = false; return; }
+                if (voucher.expiry && voucher.expiry.toDate() < new Date()) { showToast("❌ This voucher has expired!", false); claimBtn.innerHTML = originalText; claimBtn.disabled = false; return; }
+                if (voucher.claimedBy && voucher.claimedBy.includes(activeUserSession.uid)) { showToast("❌ You have already claimed this voucher!", false); claimBtn.innerHTML = originalText; claimBtn.disabled = false; return; }
                 const currentIndex = voucher.currentClaimIndex || 0;
                 const claimAmount = voucher.splitAmounts[currentIndex];
-                
-                if (!claimAmount || claimAmount <= 0) {
-                    showToast("❌ Voucher error - no remaining value", false);
-                    claimBtn.innerHTML = originalText;
-                    claimBtn.disabled = false;
-                    return;
-                }
-                
+                if (!claimAmount || claimAmount <= 0) { showToast("❌ Voucher error - no remaining value", false); claimBtn.innerHTML = originalText; claimBtn.disabled = false; return; }
                 const userRef = doc(db, "users", activeUserSession.uid);
-                
                 await runTransaction(db, async (transaction) => {
                     const freshVoucher = await transaction.get(voucherDoc.ref);
                     const freshData = freshVoucher.data();
-                    
-                    if (freshData.isFullyClaimed || freshData.remainingClaims <= 0) {
-                        throw new Error("Voucher fully claimed");
-                    }
-                    
+                    if (freshData.isFullyClaimed || freshData.remainingClaims <= 0) throw new Error("Voucher fully claimed");
                     const userSnap = await transaction.get(userRef);
-                    const currentBalance = parseFloat(userSnap.data().balance || 0);
-                    const currentEarnings = parseFloat(userSnap.data().totalEarnings || 0);
-                    
-                    transaction.update(userRef, {
-                        balance: currentBalance + claimAmount,
-                        totalEarnings: currentEarnings + claimAmount
-                    });
-                    
+                    let currentEarnings = parseFloat(userSnap.data().totalEarnings || 0);
+                    transaction.update(userRef, { totalEarnings: currentEarnings + claimAmount });
                     const newRemainingClaims = freshData.remainingClaims - 1;
                     const newRemainingAmount = freshData.remainingAmount - claimAmount;
                     const newClaimIndex = freshData.currentClaimIndex + 1;
                     const newClaimedBy = [...(freshData.claimedBy || []), activeUserSession.uid];
                     const newClaimedAmounts = [...(freshData.claimedAmounts || []), claimAmount];
-                    
-                    transaction.update(voucherDoc.ref, {
-                        remainingClaims: newRemainingClaims,
-                        remainingAmount: newRemainingAmount,
-                        currentClaimIndex: newClaimIndex,
-                        claimedBy: newClaimedBy,
-                        claimedAmounts: newClaimedAmounts,
-                        isFullyClaimed: newRemainingClaims === 0
-                    });
+                    transaction.update(voucherDoc.ref, { remainingClaims: newRemainingClaims, remainingAmount: newRemainingAmount, currentClaimIndex: newClaimIndex, claimedBy: newClaimedBy, claimedAmounts: newClaimedAmounts, isFullyClaimed: newRemainingClaims === 0 });
                 });
-                
-                await addDoc(collection(db, "voucherRedemptions"), {
-                    voucherCode: code,
-                    userId: activeUserSession.uid,
-                    username: localUserRecord.username || "User",
-                    userTier: localUserRecord.tierCode,
-                    amountClaimed: claimAmount,
-                    claimNumber: voucher.currentClaimIndex + 1,
-                    totalClaims: voucher.totalPeople,
-                    timestamp: serverTimestamp()
-                });
-                
-                await addDoc(collection(db, "ledger"), {
-                    uid: activeUserSession.uid,
-                    title: `Voucher Claim: ${code}`,
-                    amount: claimAmount,
-                    type: "credit",
-                    timestamp: serverTimestamp(),
-                    claimPosition: voucher.currentClaimIndex + 1
-                });
-                
-                const remaining = voucher.remainingClaims - 1;
-                const position = voucher.currentClaimIndex + 1;
-                
+                await addDoc(collection(db, "voucherRedemptions"), { voucherCode: code, userId: activeUserSession.uid, username: localUserRecord.username || "User", userTier: localUserRecord.tierCode, amountClaimed: claimAmount, claimNumber: voucher.currentClaimIndex + 1, totalClaims: voucher.totalPeople, timestamp: serverTimestamp() });
+                await addDoc(collection(db, "ledger"), { uid: activeUserSession.uid, title: `Voucher Claim: ${code}`, amount: claimAmount, type: "credit", timestamp: serverTimestamp(), claimPosition: voucher.currentClaimIndex + 1 });
                 claimBtn.innerHTML = originalText;
                 claimBtn.disabled = false;
-                
-                Swal.fire({
-                    title: '🎉 Voucher Claimed!',
-                    html: `
-                        <div style="text-align: center;">
-                            <div style="font-size: 2rem; color: #10b981; margin-bottom: 10px;">+₦${claimAmount.toLocaleString()}</div>
-                            <div style="font-size: 0.8rem; color: #e5b842;">You were Claimant #${position} of ${voucher.totalPeople}</div>
-                            <div style="font-size: 0.7rem; color: #9ca3af; margin-top: 10px;">${remaining > 0 ? `✨ ${remaining} claims remaining on this voucher` : '🏆 Voucher fully claimed!'}</div>
-                        </div>
-                    `,
-                    icon: 'success',
-                    background: '#111424',
-                    color: '#fff',
-                    confirmButtonColor: '#e5b842',
-                    timer: 4000,
-                    timerProgressBar: true
-                });
-                
+                Swal.fire({ title: '🎉 Voucher Claimed!', html: `<div><div style="font-size:2rem;color:#10b981;">+₦${claimAmount.toLocaleString()}</div><div style="font-size:0.8rem;color:#e5b842;">Claimant #${voucher.currentClaimIndex + 1} of ${voucher.totalPeople}</div></div>`, icon: 'success', background: '#111424', color: '#fff', confirmButtonColor: '#e5b842', timer: 4000 });
                 document.getElementById('voucherCodeField').value = '';
                 closePortalModal('couponModalPopup');
                 await loadVoucherHistory();
-                
-                const userDocRef = doc(db, "users", activeUserSession.uid);
-                const userSnap = await getDoc(userDocRef);
-                if (userSnap.exists()) {
-                    renderTerminalMetrics(userSnap.data());
-                }
-                
+                await calculateBalances(activeUserSession.uid);
             } catch (error) {
                 console.error("Voucher claim error:", error);
-                showToast(error.message || "Error processing voucher. Please try again.", false);
+                showToast(error.message || "Error processing voucher.", false);
                 claimBtn.innerHTML = originalText;
                 claimBtn.disabled = false;
             }
         }
 
-        // New voucher claim button handler
         document.getElementById('claimVoucherBtn').addEventListener('click', async () => {
-            if (!activeUserSession || !localUserRecord) {
-                showToast("Please login first", false);
-                return;
-            }
-            
+            if (!activeUserSession || !localUserRecord) { showToast("Please login first", false); return; }
             const codeInput = document.getElementById('voucherCodeField');
             const code = codeInput.value.trim().toUpperCase();
-            
-            if (!code) {
-                showToast("Please enter a voucher code", false);
-                codeInput.focus();
-                return;
-            }
-            
-            if (code.length < 6 || code.length > 8) {
-                showToast("Invalid voucher code format. Code should be 6-8 characters.", false);
-                return;
-            }
-            
+            if (!code) { showToast("Please enter a voucher code", false); codeInput.focus(); return; }
+            if (code.length < 6 || code.length > 8) { showToast("Invalid voucher code format. Code should be 6-8 characters.", false); return; }
             await claimProgressiveVoucher(code);
         });
 
