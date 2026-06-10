@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     
     <meta property="og:title" content="NEXUS EARN - Secure Withdrawal Portal">
-    <meta property="og:description" content="Withdraw your withdrawable balance securely. VIP 1+ required. 10% processing fee applies.">
+    <meta property="og:description" content="Withdraw your withdrawable balance securely. VIP 1+ required. 10% processing fee applies. Referral bonuses unlock when your referrals activate VIP.">
     <meta property="og:image" content="https://nexus-earn.com/logo.png">
     <meta property="og:url" content="https://nexus-earn.com">
     <meta property="og:type" content="website">
@@ -132,6 +132,10 @@
         .referral-item:last-child { border-bottom: none; }
         .frozen { color: #f59e0b; }
         .unlocked { color: #10b981; }
+        
+        .bank-warning { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 12px; padding: 12px; display: none; align-items: center; gap: 10px; margin-top: 5px; }
+        .bank-warning i { color: #ef4444; }
+        .bank-warning p { font-size: 0.65rem; color: #ef4444; }
     </style>
 </head>
 <body>
@@ -162,9 +166,9 @@
                 <div class="balance-card">
                     <div class="balance-icon"><i class="fa-solid fa-wallet"></i></div>
                     <div class="balance-details">
-                        <p>💰 TOTAL BALANCE (Same as Dashboard)</p>
-                        <h3 id="totalBalanceDisplay">₦0.00</h3>
-                        <small style="font-size: 0.6rem; color: #6b7280;">From mining + daily claims + unlocked referrals</small>
+                        <p>💰 MAIN BALANCE (From Dashboard)</p>
+                        <h3 id="mainBalanceDisplay">₦0.00</h3>
+                        <small style="font-size: 0.6rem; color: #6b7280;">Your available balance from dashboard</small>
                     </div>
                 </div>
                 
@@ -180,9 +184,9 @@
                 <div class="balance-card withdrawable-card">
                     <div class="balance-icon"><i class="fa-solid fa-unlock-alt"></i></div>
                     <div class="balance-details">
-                        <p>✅ WITHDRAWABLE BALANCE</p>
+                        <p>✅ TOTAL WITHDRAWABLE BALANCE</p>
                         <h3 id="withdrawableDisplay">₦0.00</h3>
-                        <small style="font-size: 0.6rem; color: #10b981;">💰 Available for withdrawal</small>
+                        <small style="font-size: 0.6rem; color: #10b981;">💰 Main Balance + Unlocked Referrals + Commissions</small>
                     </div>
                 </div>
             </div>
@@ -204,7 +208,7 @@
                     <p style="margin-top: 6px;">🔹 When you refer someone, you get <strong>₦300</strong> instantly — but it's <strong class="frozen">FROZEN in Pending Balance</strong> until they activate any VIP plan.<br>
                     🔹 When your referral activates VIP, their <strong>₦300 bonus UNLOCKS</strong> AND moves to <strong class="unlocked">Withdrawable Balance</strong>!<br>
                     🔹 You also get <strong>10% of their VIP plan cost</strong> added directly to Withdrawable Balance.<br>
-                    🔹 <strong>Total Balance = Withdrawable + Pending</strong> (matches your Dashboard total earnings)</p>
+                    🔹 <strong>Total Withdrawable = Main Balance + Unlocked ₦300 + 10% Commissions</strong></p>
                 </div>
             </div>
 
@@ -218,6 +222,12 @@
             <div class="lockout-box" id="lockoutBox">
                 <i class="fa-solid fa-circle-lock"></i>
                 <div><strong>WITHDRAWAL LOCKED</strong><br><small>You have a pending withdrawal request. Please wait for admin approval.</small></div>
+            </div>
+
+            <!-- Bank Warning -->
+            <div class="bank-warning" id="bankWarning">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <p><strong>⚠️ BANK DETAILS MISSING</strong><br>Please add your bank details in the Profile tab before requesting withdrawal.</p>
             </div>
 
             <!-- Withdrawal Amount Input -->
@@ -287,7 +297,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-        import { getFirestore, doc, runTransaction, collection, addDoc, serverTimestamp, onSnapshot, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, doc, runTransaction, collection, addDoc, serverTimestamp, onSnapshot, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDUIQ5s-MI2V3rsi_uWBbRb5YGcFmjjKK4",
@@ -306,7 +316,7 @@
         let hasPending = false, isProcessing = false;
         let bank = "", accNum = "", accName = "";
         let loadingHidden = false;
-        let withdrawableBalance = 0, pendingBalance = 0, totalBalance = 0;
+        let mainBalance = 0, pendingBalance = 0, withdrawableBalance = 0;
 
         function hideLoading() {
             if (loadingHidden) return;
@@ -355,15 +365,18 @@
             }
         }
 
-        // MAIN BALANCE CALCULATION - SAME AS DASHBOARD
+        // MAIN BALANCE CALCULATION - Uses 'balance' field from Firebase
         async function calculateBalances(userId) {
             try {
                 updateLoadingStatus("Calculating balances...");
                 
-                // Get user data
+                // Get user data - CRITICAL: Use 'balance' field
                 const userDoc = await getDoc(doc(db, "users", userId));
                 if (!userDoc.exists()) throw new Error("User not found");
                 const user = userDoc.data();
+                
+                // MAIN BALANCE from Firebase 'balance' field
+                mainBalance = user.balance || 0;
                 
                 // Get all referred users
                 const referredQuery = query(collection(db, "users"), where("referredBy", "==", userId));
@@ -394,23 +407,14 @@
                     }
                 }
                 
-                // TOTAL BALANCE = totalEarnings from dashboard (this includes mining + daily claims + unlocked referrals)
-                const dashboardTotalEarnings = user.totalEarnings || 0;
-                
-                // WITHDRAWABLE BALANCE = totalEarnings + unlockedReferral300 + commissionFromActivated
-                // (Note: totalEarnings already includes unlocked referrals from previous calculations, but we add them again to be safe)
-                // Actually, dashboard's totalEarnings already includes unlocked referral bonuses!
-                // So withdrawable = totalEarnings + commissionFromActivated
-                withdrawableBalance = dashboardTotalEarnings + commissionFromActivated;
-                
                 // PENDING BALANCE = only the frozen ₦300 bonuses
                 pendingBalance = frozenReferral300;
                 
-                // TOTAL DISPLAY = withdrawable + pending (matches dashboard)
-                totalBalance = withdrawableBalance + pendingBalance;
+                // WITHDRAWABLE BALANCE = mainBalance + unlockedReferral300 + commissionFromActivated
+                withdrawableBalance = mainBalance + unlockedReferral300 + commissionFromActivated;
                 
                 // Update displays
-                document.getElementById('totalBalanceDisplay').innerHTML = "₦" + totalBalance.toLocaleString(undefined, {minimumFractionDigits:2});
+                document.getElementById('mainBalanceDisplay').innerHTML = "₦" + mainBalance.toLocaleString(undefined, {minimumFractionDigits:2});
                 document.getElementById('pendingBalanceDisplay').innerHTML = "₦" + pendingBalance.toLocaleString(undefined, {minimumFractionDigits:2});
                 document.getElementById('withdrawableDisplay').innerHTML = "₦" + withdrawableBalance.toLocaleString(undefined, {minimumFractionDigits:2});
                 
@@ -426,23 +430,23 @@
                         <div class="referral-item"><span class="unlocked">🔓 UNLOCKED ₦300 BONUSES (activated users):</span><span class="unlocked">₦${unlockedReferral300.toLocaleString()}</span></div>
                         <div class="referral-item"><span class="unlocked">💰 10% COMMISSION from activated referrals:</span><span class="unlocked">₦${commissionFromActivated.toLocaleString()}</span></div>
                         <div class="referral-item" style="border-top:1px solid rgba(255,255,255,0.1); margin-top:5px; padding-top:8px;"><strong>TOTAL WITHDRAWABLE FROM REFERRALS:</strong><strong class="unlocked">₦${(unlockedReferral300 + commissionFromActivated).toLocaleString()}</strong></div>
-                        <div class="referral-item"><strong>📊 DASHBOARD TOTAL EARNINGS:</strong><strong>₦${dashboardTotalEarnings.toLocaleString()}</strong></div>
+                        <div class="referral-item"><strong>💰 MAIN BALANCE (from dashboard):</strong><strong>₦${mainBalance.toLocaleString()}</strong></div>
                     `;
                 } else {
                     breakdownDiv.style.display = 'none';
                 }
                 
                 updateLoadingStatus("Ready");
-                return { withdrawableBalance, pendingBalance, totalBalance };
+                return { mainBalance, pendingBalance, withdrawableBalance };
                 
             } catch (error) {
                 console.error("Balance calculation error:", error);
                 updateLoadingStatus("Error loading balances");
-                return { withdrawableBalance: 0, pendingBalance: 0, totalBalance: 0 };
+                return { mainBalance: 0, pendingBalance: 0, withdrawableBalance: 0 };
             }
         }
 
-        // Load withdrawal history with client-side sorting
+        // Load withdrawal history with client-side sorting (NO INDEX REQUIRED)
         async function loadHistory(uid) {
             const container = document.getElementById('historyList');
             try {
@@ -521,6 +525,10 @@
             } else {
                 taxCard.style.display = 'none';
             }
+            
+            if (val > maxWithdrawable && maxWithdrawable > 0) {
+                showErrorToast(`⚠️ You can only withdraw up to ₦${maxWithdrawable.toLocaleString()} (your withdrawable balance). Pending balance (₦${pendingBalance.toLocaleString()}) is frozen until your referrals activate VIP.`);
+            }
         });
 
         // Main auth and data loading
@@ -555,7 +563,15 @@
                     document.getElementById('accountNumber').innerText = accNum;
                     document.getElementById('accountName').innerText = accName;
                     
-                    // Calculate balances (uses totalEarnings from dashboard)
+                    // Show bank warning if missing
+                    const bankWarning = document.getElementById('bankWarning');
+                    if (bank === "Not set" || accNum === "Not set") {
+                        bankWarning.style.display = 'flex';
+                    } else {
+                        bankWarning.style.display = 'none';
+                    }
+                    
+                    // Calculate balances using 'balance' field
                     await calculateBalances(user.uid);
                     
                     hideLoading();
@@ -588,7 +604,7 @@
             onSnapshot(query(collection(db, "withdrawals"), where("uid", "==", user.uid)), () => loadHistory(user.uid));
         });
 
-        // Withdrawal request handler - DEDUCTS FROM totalEarnings
+        // Withdrawal request handler - DEDUCTS FROM 'balance' FIELD
         document.getElementById('withdrawBtn').addEventListener('click', async () => {
             if (!currentUser || !userData) { showErrorToast("System not ready. Please refresh."); return; }
             if (hasPending) { showErrorToast("❌ You have a pending withdrawal request. Please wait for admin approval."); return; }
@@ -628,13 +644,13 @@
             let net = amount - tax;
             
             try {
-                // DEDUCT FROM totalEarnings (this is what dashboard uses)
+                // DEDUCT FROM 'balance' FIELD (this is what dashboard uses)
                 await runTransaction(db, async (transaction) => {
                     const userRef = doc(db, "users", currentUser.uid);
                     const snap = await transaction.get(userRef);
-                    let currentTotalEarnings = snap.data().totalEarnings || 0;
-                    if (currentTotalEarnings < amount) throw new Error("Insufficient withdrawable balance");
-                    transaction.update(userRef, { totalEarnings: currentTotalEarnings - amount });
+                    let currentBalance = snap.data().balance || 0;
+                    if (currentBalance < amount) throw new Error("Insufficient balance");
+                    transaction.update(userRef, { balance: currentBalance - amount });
                 });
                 
                 // Create withdrawal request
@@ -650,7 +666,10 @@
                     accountName: accName,
                     status: "pending",
                     timestamp: serverTimestamp(),
-                    requestedAt: new Date().toISOString()
+                    requestedAt: new Date().toISOString(),
+                    withdrawableBalanceAtTime: withdrawableBalance,
+                    mainBalanceAtTime: mainBalance,
+                    pendingBalanceAtTime: pendingBalance
                 });
                 
                 document.getElementById('amountInput').value = "";
@@ -671,14 +690,19 @@
                         <div style="margin-top:10px; background:rgba(16,185,129,0.1); padding:8px; border-radius:8px; text-align:center;">
                             <i class="fa-solid fa-chart-line"></i> <strong>Remaining Withdrawable: ₦${(withdrawableBalance - amount).toLocaleString()}</strong>
                         </div>
+                        <div style="margin-top:10px; background:rgba(245,158,11,0.1); padding:8px; border-radius:8px; text-align:center;">
+                            <i class="fa-solid fa-lock"></i> <strong>Pending (Frozen) Balance: ₦${pendingBalance.toLocaleString()}</strong><br>
+                            <small style="color:#f59e0b;">🔓 Unlocks when your referrals activate VIP</small>
+                        </div>
                     </div>`,
                     'success',
-                    6000
+                    7000
                 );
                 
                 btn.disabled = true;
-                btn.innerHTML = '<i class="fa-solid fa-clock"></i> REQUEST PENDING';
+                btn.innerHTML = '<i class="fa-solid fa-clock"></i> REQUEST PENDING - WAIT FOR APPROVAL';
                 
+                // Refresh page after 2 seconds to update balances
                 setTimeout(() => {
                     window.location.reload();
                 }, 2500);
@@ -694,4 +718,4 @@
         setTimeout(hideLoading, 8000);
     </script>
 </body>
-                </html>
+</html>
