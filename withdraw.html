@@ -295,9 +295,10 @@
     </div>
 
     <script type="module">
+        // IMPORTANT: Added getDoc to fix the error!
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-        import { getFirestore, doc, runTransaction, collection, addDoc, serverTimestamp, onSnapshot, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, doc, runTransaction, collection, addDoc, serverTimestamp, onSnapshot, query, where, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDUIQ5s-MI2V3rsi_uWBbRb5YGcFmjjKK4",
@@ -371,7 +372,8 @@
                 updateLoadingStatus("Calculating balances...");
                 
                 // Get user data - CRITICAL: Use 'balance' field
-                const userDoc = await getDoc(doc(db, "users", userId));
+                const userDocRef = doc(db, "users", userId);
+                const userDoc = await getDoc(userDocRef);  // NOW getDoc is defined
                 if (!userDoc.exists()) throw new Error("User not found");
                 const user = userDoc.data();
                 
@@ -442,6 +444,7 @@
             } catch (error) {
                 console.error("Balance calculation error:", error);
                 updateLoadingStatus("Error loading balances");
+                showErrorToast("Could not load balances. Please refresh.");
                 return { mainBalance: 0, pendingBalance: 0, withdrawableBalance: 0 };
             }
         }
