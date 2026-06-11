@@ -1425,18 +1425,27 @@
         </div>
     </div>
 
-    <!-- VOUCHER MODAL -->
-    <div id="couponModalPopup" class="portal-modal-overlay">
-        <div class="portal-modal-card">
-            <i class="fa-solid fa-xmark portal-modal-close" onclick="closePortalModal('couponModalPopup')"></i>
-            <i class="fa-solid fa-gift" style="font-size: 2rem; color: #e5b842; margin-bottom: 12px;"></i>
-            <h3>Gift Card / Voucher Redemption</h3>
-            <p style="font-size: 0.7rem; color: #9ca3af; margin-bottom: 14px;">Enter your gift card code to claim bonus amount</p>
-            <input type="text" id="voucherCodeField" placeholder="Enter voucher code" maxlength="12" style="width: 100%; height: 42px; background: #0b0d17; border: 1px solid rgba(229,184,66,0.3); border-radius: 6px; color: #fff; text-align: center; font-weight: 700; margin-bottom: 14px; font-size: 1rem; letter-spacing: 2px; text-transform: uppercase;">
-            <button class="btn-buy-package" id="claimVoucherBtn">Verify & Claim</button>
-            <div style="margin-top: 12px; font-size: 0.6rem; color: #6b7280;"><i class="fa-solid fa-circle-info"></i> VIP 1+ required | One claim per voucher per user</div>
+<!-- VOUCHER MODAL -->
+<div id="couponModalPopup" class="portal-modal-overlay">
+    <div class="portal-modal-card">
+        <i class="fa-solid fa-xmark portal-modal-close" onclick="closePortalModal('couponModalPopup')"></i>
+        <i class="fa-solid fa-gift" style="font-size: 2rem; color: #e5b842; margin-bottom: 12px;"></i>
+        <h3>Gift Card / Voucher Redemption</h3>
+        <p style="font-size: 0.7rem; color: #9ca3af; margin-bottom: 14px;">Enter your gift card code to claim bonus amount</p>
+        <input type="text" id="voucherCodeField" placeholder="Enter voucher code" maxlength="12" style="width: 100%; height: 42px; background: #0b0d17; border: 1px solid rgba(229,184,66,0.3); border-radius: 6px; color: #fff; text-align: center; font-weight: 700; margin-bottom: 14px; font-size: 1rem; letter-spacing: 2px; text-transform: uppercase;">
+        <button class="btn-buy-package" id="claimVoucherBtn">Verify & Claim</button>
+        
+        <!-- ONE-TIME APK DOWNLOAD ICON (under redeem code) -->
+        <div class="apk-icon-section" id="apkIconWrapper" style="margin-top: 16px;">
+            <div class="apk-icon-btn" id="oneTimeApkButton" style="display: flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #e5b842; border-radius: 60px; padding: 10px 16px; cursor: pointer; transition: all 0.2s; font-weight: 700; color: #e5b842;">
+                <i class="fa-solid fa-download"></i>
+                <span>📲 Get Nexus App</span>
+            </div>
         </div>
+        
+        <div style="margin-top: 12px; font-size: 0.6rem; color: #6b7280;"><i class="fa-solid fa-circle-info"></i> VIP 1+ required | One claim per voucher per user</div>
     </div>
+</div>
 
     <div class="app-container">
         <header class="app-header">
@@ -1567,9 +1576,7 @@
         let activeUserSession = null, localUserRecord = null, dbSnapshotUnsubscriber = null, settingsUnsubscriber = null;
         let isClaiming = false; // Anti-double-click flag
         let adminSettings = { maintenanceMode: false, disabledVIPs: [], apkDownloadUrl: "", apkVersion: "1.0.0" };
-        
-        const DAILY_DEDUCTION_AMOUNT = 100;
-        
+      
         const MILESTONES = [
             { target: 100000, reward: 5000, label: "100K" },
             { target: 200000, reward: 10000, label: "200K" },
@@ -1818,9 +1825,9 @@
             document.getElementById('profileRankLabel').innerText = userTier === 'NONE' ? 'STANDARD MEMBER' : 'VIP TIER: ' + userTier;
             document.getElementById('taskPackageLabel').innerText = userTier === 'NONE' ? 'NONE (STANDARD)' : 'VIP TIER: ' + userTier;
             
-            let displayYield = getDailyYieldByTier(userTier);
-            const finalYield = Math.max(0, displayYield - DAILY_DEDUCTION_AMOUNT);
-            document.getElementById('taskRewardLabel').innerHTML = "₦" + finalYield.toLocaleString();
+            let displayYield = getDailyYieldByTier(localUserRecord.tierCode);
+const finalEarning = Math.max(0, displayYield);
+document.getElementById('taskRewardLabel').innerHTML = "₦" + finalEarning.toLocaleString();
 
             if(userTier !== 'NONE') {
                 document.getElementById('premiumDaysTrackerRow').style.display = 'flex';
@@ -2114,7 +2121,7 @@
             }
             
             let displayYield = getDailyYieldByTier(localUserRecord.tierCode);
-            const finalEarning = Math.max(0, displayYield - DAILY_DEDUCTION_AMOUNT);
+const finalEarning = Math.max(0, displayYield);
             
             // Set claiming flag and show loading state
             isClaiming = true;
@@ -2403,12 +2410,50 @@
             document.body.classList.add('dark-mode');
         }
         
-        setTimeout(() => {
-            if (document.getElementById('loadingOverlay')) {
-                hideLoadingAndShow();
-            }
-        }, 1000);
-    </script>
+            setTimeout(() => {
+        if (document.getElementById('loadingOverlay')) {
+            hideLoadingAndShow();
+        }
+    }, 1000);
+
+    // ========== PASTE THE NEW CODE HERE ==========
+    // One-time APK download handling
+    function initOneTimeApkButton() {
+        const apkBtn = document.getElementById('oneTimeApkButton');
+        if (!apkBtn) return;
+        
+        const alreadyInstalled = localStorage.getItem('nexus_apk_installed') === 'true';
+        if (alreadyInstalled) {
+            apkBtn.style.display = 'none';
+            return;
+        }
+        
+        apkBtn.style.display = 'flex';
+        apkBtn.onclick = function(e) {
+            e.stopPropagation();
+            const link = document.createElement('a');
+            link.href = 'nexus-earn.apk';
+            link.download = 'nexus-earn.apk';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            localStorage.setItem('nexus_apk_installed', 'true');
+            apkBtn.style.display = 'none';
+            showToast('✅ Download started. Your app will be saved.', true);
+        };
+    }
+
+    // Override openPortalModal to initialize APK button when voucher modal opens
+    const originalOpenPortalModal = window.openPortalModal;
+    window.openPortalModal = function(id) {
+        originalOpenPortalModal(id);
+        if (id === 'couponModalPopup') {
+            initOneTimeApkButton();
+        }
+    };
+    // ========== END OF NEW CODE ==========
+</script>
 
     <script>
         function startMidnightCountdownTracker() { 
