@@ -1512,7 +1512,7 @@
 
             <div id="viewTask" class="app-view">
                 <h2 class="section-headline"><i class="fa-solid fa-hand-holding-usd"></i> Daily Income Settlement</h2>
-                <p class="section-subline">Active earnings can be collected once every calendar day. The loop fully resets at 12:00 AM Midnight.</p>
+                <p class="section-subline">Active earnings can be collected once every calendar day. The loop fully resets at 12:00 AM midnight (Nigeria time).</p>
                 <div class="task-container">
                     <div class="task-status-banner"><i class="fa-solid fa-chart-line"></i> Active Level: <span id="taskPackageLabel">NONE (STANDARD)</span></div>
                     <div class="premium-days-badge-container" id="premiumDaysTrackerRow"><span class="days-title-text"><i class="fa-solid fa-hourglass-half"></i> Active Contract Duration Remaining:</span><span class="days-value-counter" id="premiumDaysRemainingText">0 Days</span></div>
@@ -1566,7 +1566,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, runTransaction, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit, updateDoc, arrayUnion, getDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, doc, onSnapshot, runTransaction, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit, updateDoc, arrayUnion, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDUIQ5s-MI2V3rsi_uWBbRb5YGcFmjjKK4", authDomain: "nexus-earn-1.firebaseapp.com", projectId: "nexus-earn-1", storageBucket: "nexus-earn-1.firebasestorage.app", messagingSenderId: "779765076952", appId: "1:779765076952:web:fa5fac51bef82e74b598ad" };
         const app = initializeApp(firebaseConfig);
@@ -1589,6 +1589,15 @@
             { target: 900000, reward: 45000, label: "900K" },
             { target: 1000000, reward: 50000, label: "1M" }
         ];
+
+        // Helper: Get current date in Nigeria (UTC+1) without time
+        function getNigeriaDate() {
+            const now = new Date();
+            // Convert to UTC+1 (Nigeria time)
+            const nigeriaTime = new Date(now.getTime() + (3600000)); // +1 hour
+            const nigeriaDate = new Date(nigeriaTime.toISOString().split('T')[0]);
+            return nigeriaDate.toISOString().split('T')[0];
+        }
 
         function hideLoadingAndShow() {
             const loader = document.getElementById('loadingOverlay');
@@ -1631,7 +1640,7 @@
                 if (docSnap.exists()) {
                     adminSettings = docSnap.data();
                 } else {
-                    // Create default settings
+                    // Create default settings (no firstReferralBonus)
                     const defaultSettings = {
                         maintenanceMode: false,
                         disabledVIPs: [],
@@ -1639,7 +1648,6 @@
                         apkVersion: "1.0.0",
                         dailyDeduction: 100,
                         defaultContractDays: 40,
-                        firstReferralBonus: 300,
                         referralCommissionRate: 10,
                         checkinBonus: 50
                     };
@@ -1722,7 +1730,7 @@
             if (!localUserRecord) return;
             
             const userTier = localUserRecord.tierCode || 'NONE';
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = getNigeriaDate(); // Nigeria date
             const alreadyClaimed = localUserRecord.lastMiningClaimDate === todayStr;
             const daysRemaining = parseInt(localUserRecord.contractDaysRemaining || 0);
             
@@ -1826,8 +1834,8 @@
             document.getElementById('taskPackageLabel').innerText = userTier === 'NONE' ? 'NONE (STANDARD)' : 'VIP TIER: ' + userTier;
             
             let displayYield = getDailyYieldByTier(localUserRecord.tierCode);
-const finalEarning = Math.max(0, displayYield);
-document.getElementById('taskRewardLabel').innerHTML = "₦" + finalEarning.toLocaleString();
+            const finalEarning = Math.max(0, displayYield);
+            document.getElementById('taskRewardLabel').innerHTML = "₦" + finalEarning.toLocaleString();
 
             if(userTier !== 'NONE') {
                 document.getElementById('premiumDaysTrackerRow').style.display = 'flex';
@@ -2051,7 +2059,7 @@ document.getElementById('taskRewardLabel').innerHTML = "₦" + finalEarning.toLo
                 showToast("Daily attendance rewards require an active plan level.", false); 
                 return; 
             } 
-            const todayStr = new Date().toISOString().split('T')[0]; 
+            const todayStr = getNigeriaDate(); 
             if (localUserRecord.lastAttendanceClaimDate === todayStr) { 
                 showToast("Attendance bonus already processed for today.", false); 
                 return; 
@@ -2099,7 +2107,7 @@ document.getElementById('taskRewardLabel').innerHTML = "₦" + finalEarning.toLo
                 return; 
             }
             
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = getNigeriaDate();
             if (localUserRecord.lastMiningClaimDate === todayStr) { 
                 showToast("Today's earnings already collected. Come back tomorrow at midnight reset.", false); 
                 return; 
@@ -2121,7 +2129,7 @@ document.getElementById('taskRewardLabel').innerHTML = "₦" + finalEarning.toLo
             }
             
             let displayYield = getDailyYieldByTier(localUserRecord.tierCode);
-const finalEarning = Math.max(0, displayYield);
+            const finalEarning = Math.max(0, displayYield);
             
             // Set claiming flag and show loading state
             isClaiming = true;
@@ -2192,7 +2200,7 @@ const finalEarning = Math.max(0, displayYield);
                     showToast("System maintenance in progress. Please try again later.", false);
                 } else if (localUserRecord && (!localUserRecord.tierCode || localUserRecord.tierCode === 'NONE')) {
                     showToast("No active investment plan. Purchase a VIP plan to start earning.", false);
-                } else if (localUserRecord && localUserRecord.lastMiningClaimDate === new Date().toISOString().split('T')[0]) {
+                } else if (localUserRecord && localUserRecord.lastMiningClaimDate === getNigeriaDate()) {
                     showToast("You've already collected today's earnings. Come back tomorrow!", false);
                 }
             }
@@ -2214,10 +2222,7 @@ const finalEarning = Math.max(0, displayYield);
                     let calculatedCommission = purchasedPlanCost * (adminSettings.referralCommissionRate || 10) / 100; 
                     let finalPayoutSum = calculatedCommission; 
                     let trackingMessage = `🤝 ${adminSettings.referralCommissionRate || 10}% Direct Plan Referral Commission`; 
-                    if (directInvitesCount === 0) { 
-                        finalPayoutSum += (adminSettings.firstReferralBonus || 300); 
-                        trackingMessage = "🎁 First Referral Bonus (+₦" + (adminSettings.firstReferralBonus || 300) + " Stacked)"; 
-                    } 
+                    // FIRST REFERRAL BONUS HAS BEEN REMOVED – no extra 300
                     transaction.update(referrerDocRef, { 
                         balance: currentBalance + finalPayoutSum, 
                         referralBonusEarned: currentBonusEarned + finalPayoutSum, 
@@ -2264,27 +2269,44 @@ const finalEarning = Math.max(0, displayYield);
             } 
         });
 
+        // FIXED: Voucher history without index error (fetch all, sort client-side)
         async function loadVoucherHistory() {
             if (!activeUserSession) return;
             try {
-                const historyQuery = query(collection(db, "voucherRedemptions"), where("userId", "==", activeUserSession.uid), orderBy("timestamp", "desc"), limit(5));
+                const historyQuery = query(collection(db, "voucherRedemptions"), where("userId", "==", activeUserSession.uid));
                 const snapshot = await getDocs(historyQuery);
                 const historySection = document.getElementById('voucherHistorySection');
                 const historyList = document.getElementById('voucherHistoryList');
                 if (!historySection) return;
-                if (snapshot.empty) { historySection.style.display = 'none'; return; }
-                historySection.style.display = 'block';
-                historyList.innerHTML = '';
+                if (snapshot.empty) { 
+                    historySection.style.display = 'none'; 
+                    return; 
+                }
+                // Sort manually in memory (descending by timestamp)
+                let items = [];
                 snapshot.forEach(docSnap => {
                     const redemption = docSnap.data();
-                    const date = redemption.timestamp?.toDate() || new Date();
-                    const item = document.createElement('div');
-                    item.className = 'voucher-history-item';
-                    const voucherNameHtml = redemption.voucherName ? `<span class="voucher-name">(${redemption.voucherName})</span>` : '';
-                    item.innerHTML = `<div><div class="voucher-history-code">${redemption.voucherCode}${voucherNameHtml}</div><div class="voucher-history-date">${date.toLocaleDateString()}</div></div><div class="voucher-history-amount">+₦${(redemption.amountClaimed || 0).toLocaleString()}</div>`;
-                    historyList.appendChild(item);
+                    const timestamp = redemption.timestamp?.toDate() || new Date(0);
+                    items.push({ redemption, timestamp });
                 });
-            } catch (e) { console.log("History load error:", e); }
+                items.sort((a, b) => b.timestamp - a.timestamp);
+                // Take latest 5
+                items = items.slice(0, 5);
+                
+                historySection.style.display = 'block';
+                historyList.innerHTML = '';
+                for (let item of items) {
+                    const redemption = item.redemption;
+                    const date = item.timestamp;
+                    const div = document.createElement('div');
+                    div.className = 'voucher-history-item';
+                    const voucherNameHtml = redemption.voucherName ? `<span class="voucher-name">(${redemption.voucherName})</span>` : '';
+                    div.innerHTML = `<div><div class="voucher-history-code">${redemption.voucherCode}${voucherNameHtml}</div><div class="voucher-history-date">${date.toLocaleDateString()}</div></div><div class="voucher-history-amount">+₦${(redemption.amountClaimed || 0).toLocaleString()}</div>`;
+                    historyList.appendChild(div);
+                }
+            } catch (e) { 
+                console.log("History load error:", e); 
+            }
         }
 
         async function claimProgressiveVoucher(code) {
@@ -2410,50 +2432,44 @@ const finalEarning = Math.max(0, displayYield);
             document.body.classList.add('dark-mode');
         }
         
-            setTimeout(() => {
-        if (document.getElementById('loadingOverlay')) {
-            hideLoadingAndShow();
-        }
-    }, 1000);
+        setTimeout(() => {
+            if (document.getElementById('loadingOverlay')) {
+                hideLoadingAndShow();
+            }
+        }, 1000);
 
-    // ========== PASTE THE NEW CODE HERE ==========
-    // One-time APK download handling
-    function initOneTimeApkButton() {
-        const apkBtn = document.getElementById('oneTimeApkButton');
-        if (!apkBtn) return;
-        
-        const alreadyInstalled = localStorage.getItem('nexus_apk_installed') === 'true';
-        if (alreadyInstalled) {
-            apkBtn.style.display = 'none';
-            return;
+        // One-time APK download handling
+        function initOneTimeApkButton() {
+            const apkBtn = document.getElementById('oneTimeApkButton');
+            if (!apkBtn) return;
+            const alreadyInstalled = localStorage.getItem('nexus_apk_installed') === 'true';
+            if (alreadyInstalled) {
+                apkBtn.style.display = 'none';
+                return;
+            }
+            apkBtn.style.display = 'flex';
+            apkBtn.onclick = function(e) {
+                e.stopPropagation();
+                const link = document.createElement('a');
+                link.href = 'nexus-earn.apk';
+                link.download = 'nexus-earn.apk';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                localStorage.setItem('nexus_apk_installed', 'true');
+                apkBtn.style.display = 'none';
+                showToast('✅ Download started. Your app will be saved.', true);
+            };
         }
-        
-        apkBtn.style.display = 'flex';
-        apkBtn.onclick = function(e) {
-            e.stopPropagation();
-            const link = document.createElement('a');
-            link.href = 'nexus-earn.apk';
-            link.download = 'nexus-earn.apk';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            localStorage.setItem('nexus_apk_installed', 'true');
-            apkBtn.style.display = 'none';
-            showToast('✅ Download started. Your app will be saved.', true);
+
+        const originalOpenPortalModal = window.openPortalModal;
+        window.openPortalModal = function(id) {
+            originalOpenPortalModal(id);
+            if (id === 'couponModalPopup') {
+                initOneTimeApkButton();
+            }
         };
-    }
-
-    // Override openPortalModal to initialize APK button when voucher modal opens
-    const originalOpenPortalModal = window.openPortalModal;
-    window.openPortalModal = function(id) {
-        originalOpenPortalModal(id);
-        if (id === 'couponModalPopup') {
-            initOneTimeApkButton();
-        }
-    };
-    // ========== END OF NEW CODE ==========
-</script>
+    </script>
 
     <script>
         function startMidnightCountdownTracker() { 
