@@ -390,34 +390,16 @@
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
-                // If referred, give bonus to referrer
-                if (referrerId) {
-                    const referrerRef = db.collection('users').doc(referrerId);
-                    const referrerDoc = await referrerRef.get();
-                    if (referrerDoc.exists) {
-                        const currentBonus = referrerDoc.data().referralBonusEarned || 0;
-                        const currentBalance = referrerDoc.data().balance || 0;
-                        const currentInvites = referrerDoc.data().directInvitesCount || 0;
-                        
-                        await referrerRef.update({
-                            balance: currentBalance + 300,
-                            referralBonusEarned: currentBonus + 300,
-                            directInvitesCount: currentInvites + 1
-                        });
-                        
-                        await db.collection('ledger').add({
-                            uid: referrerId,
-                            title: `Referral Bonus - New user ${username} joined`,
-                            amount: 300,
-                            type: "credit",
-                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                    }
-                }
+                // *********************************************************
+                // REFERRAL BONUS (₦300) HAS BEEN REMOVED AS REQUESTED.
+                // The referrer no longer receives any bonus on signup.
+                // Only the standard 10% commission (handled elsewhere) applies.
+                // *********************************************************
+                
                 showToast("✅ Account created successfully! Redirecting...");
-setTimeout(() => {
-    window.location.href = "info.html?redirect=dashboard.html";
-}, 2000);
+                setTimeout(() => {
+                    window.location.href = "info.html?redirect=dashboard.html";
+                }, 2000);
                 
             } catch (err) {
                 showToast(err.message, true);
